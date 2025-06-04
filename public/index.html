@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تتبع صيانة الأجهزة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --ready: #9b59b6;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+        
+        .stat-card p {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .stat-card.received {
+            border-top: 4px solid var(--secondary);
+        }
+        
+        .stat-card.inprogress {
+            border-top: 4px solid var(--warning);
+        }
+        
+        .stat-card.ready {
+            border-top: 4px solid var(--ready);
+        }
+        
+        .stat-card.total {
+            border-top: 4px solid var(--primary);
+        }
+        
+        .feature-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-card h3 i {
+            margin-left: 10px;
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        button, .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            min-width: 200px;
+            text-decoration: none;
+        }
+        
+        button i, .btn i {
+            margin-left: 8px;
+        }
+        
+        button:hover, .btn:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-ready {
+            background: var(--ready);
+        }
+        
+        .btn-ready:hover {
+            background: #8e44ad;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: #d35400;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .statistics {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            
+            .stat-card h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-laptop-medical"></i> نظام تتبع صيانة الأجهزة</h1>
+            <p>أداة متكاملة لإدارة طلبات الصيانة وتتبع حالة الأجهزة من الاستلام حتى التسليم</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="statistics">
+            <div class="stat-card received">
+                <i class="fas fa-inbox fa-2x"></i>
+                <h3 id="received-count">0</h3>
+                <p>أجهزة مستلمة</p>
+            </div>
+            <div class="stat-card inprogress">
+                <i class="fas fa-tools fa-2x"></i>
+                <h3 id="inprogress-count">0</h3>
+                <p>قيد الصيانة</p>
+            </div>
+            <div class="stat-card ready">
+                <i class="fas fa-check fa-2x"></i>
+                <h3 id="ready-count">0</h3>
+                <p>جاهزة للتسليم</p>
+            </div>
+            <div class="stat-card total">
+                <i class="fas fa-laptop fa-2x"></i>
+                <h3 id="total-count">0</h3>
+                <p>إجمالي الأجهزة</p>
+            </div>
+        </div>
+        
+        <div class="feature-buttons">
+            <div class="feature-card">
+                <h3><i class="fas fa-plus-circle"></i> إضافة جهاز جديد</h3>
+                <div class="feature-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <p class="feature-description">أضف أجهزة جديدة لتتبع حالتها خلال عملية الصيانة</p>
+                <a href="add-device.html" class="btn btn-success">
+                    <i class="fas fa-plus"></i> إضافة جهاز جديد
+                </a>
+            </div>
+            
+            <div class="feature-card">
+                <h3><i class="fas fa-list"></i> قائمة الأجهزة</h3>
+                <div class="feature-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <p class="feature-description">عرض جميع الأجهزة وتصنيفها حسب حالتها</p>
+                <a href="devices.html" class="btn btn-ready">
+                    <i class="fas fa-eye"></i> عرض قائمة الأجهزة
+                </a>
+            </div>
+            
+            <div class="feature-card">
+                <h3><i class="fas fa-file-import"></i> استيراد وتصدير</h3>
+                <div class="feature-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <p class="feature-description">استيراد أو تصدير بيانات الأجهزة لإنشاء نسخة احتياطية</p>
+                <a href="import-export.html" class="btn btn-warning">
+                    <i class="fas fa-file-export"></i> استيراد/تصدير
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>تم التطوير بواسطة: محل الصيانة الخاص بك &copy; <span id="currentYear"></span></p>
+            <p>نظام تتبع صيانة الأجهزة - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تعيين سنة حقوق النشر
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // تحميل الأجهزة من localStorage عند بدء التحميل
+            let devices = JSON.parse(localStorage.getItem('devices')) || [];
+            
+            // تحديث الإحصائيات
+            function updateStatistics() {
+                const receivedCount = devices.filter(d => d.status === 'مستلم').length;
+                const inProgressCount = devices.filter(d => d.status === 'قيد الصيانة').length;
+                const readyCount = devices.filter(d => d.status === 'جاهز للتسليم').length;
+                const totalCount = devices.length;
+                
+                document.getElementById('received-count').textContent = receivedCount;
+                document.getElementById('inprogress-count').textContent = inProgressCount;
+                document.getElementById('ready-count').textContent = readyCount;
+                document.getElementById('total-count').textContent = totalCount;
+            }
+            
+            // التحميل الأولي للأجهزة
+            updateStatistics();
+            
+            // إضافة بيانات تجريبية للعرض التوضيحي
+            if (devices.length === 0) {
+                const sampleDevices = [
+                    {
+                        customerName: "أحمد محمد",
+                        customerPhone: "0123456789",
+                        deviceType: "لابتوب",
+                        deviceBrand: "Dell",
+                        issue: "بطارية لا تعمل",
+                        receivedDate: "2023-10-15",
+                        status: "مستلم"
+                    },
+                    {
+                        customerName: "سارة عبدالله",
+                        customerPhone: "0111223344",
+                        deviceType: "هاتف محمول",
+                        deviceBrand: "Samsung",
+                        issue: "شاشة مكسورة",
+                        receivedDate: "2023-10-20",
+                        status: "قيد الصيانة"
+                    },
+                    {
+                        customerName: "علي حسن",
+                        customerPhone: "0100555666",
+                        deviceType: "كمبيوتر مكتبي",
+                        deviceBrand: "HP",
+                        issue: "مشكلة في التشغيل",
+                        receivedDate: "2023-10-01",
+                        status: "جاهز للتسليم"
+                    }
+                ];
+                
+                devices = [...devices, ...sampleDevices];
+                localStorage.setItem('devices', JSON.stringify(devices));
+                updateStatistics();
+            }
+        });
+    </script>
+</body>
+</html>

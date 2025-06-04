@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة جهاز جديد - نظام تتبع صيانة الأجهزة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .card-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-left: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button, .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            text-decoration: none;
+            min-width: 200px;
+        }
+        
+        button i, .btn i {
+            margin-left: 8px;
+        }
+        
+        button:hover, .btn:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            button, .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-laptop-medical"></i> إضافة جهاز جديد</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-plus-circle"></i> معلومات الجهاز</h2>
+            <form id="deviceForm">
+                <div class="form-group">
+                    <label for="customerName">اسم العميل</label>
+                    <input type="text" id="customerName" required placeholder="أدخل اسم العميل">
+                </div>
+                
+                <div class="form-group">
+                    <label for="customerPhone">رقم الهاتف</label>
+                    <input type="tel" id="customerPhone" placeholder="أدخل رقم الهاتف">
+                </div>
+                
+                <div class="form-group">
+                    <label for="deviceType">نوع الجهاز</label>
+                    <select id="deviceType" required>
+                        <option value="">اختر نوع الجهاز</option>
+                        <option value="لابتوب">لابتوب</option>
+                        <option value="هاتف محمول">هاتف محمول</option>
+                        <option value="كمبيوتر مكتبي">كمبيوتر مكتبي</option>
+                        <option value="تابلت">تابلت</option>
+                        <option value="طابعة">طابعة</option>
+                        <option value="شاشة">شاشة</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deviceBrand">ماركة الجهاز</label>
+                    <input type="text" id="deviceBrand" placeholder="أدخل ماركة الجهاز">
+                </div>
+                
+                <div class="form-group">
+                    <label for="issue">وصف العطل</label>
+                    <textarea id="issue" rows="3" required placeholder="وصف العطل الموجود بالجهاز"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="receivedDate">تاريخ الاستلام</label>
+                    <input type="date" id="receivedDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">حالة الجهاز</label>
+                    <select id="status" required>
+                        <option value="مستلم">مستلم</option>
+                        <option value="قيد الصيانة">قيد الصيانة</option>
+                        <option value="جاهز للتسليم">جاهز للتسليم</option>
+                        <option value="تم التسليم">تم التسليم</option>
+                    </select>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-success"><i class="fas fa-save"></i> حفظ الجهاز</button>
+                    <a href="devices.html" class="btn" style="background-color: #34495e;"><i class="fas fa-laptop"></i> عرض الأجهزة</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>تم التطوير بواسطة: محل الصيانة الخاص بك &copy; <span id="currentYear"></span></p>
+            <p>نظام تتبع صيانة الأجهزة - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تعيين سنة حقوق النشر
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // تعيين تاريخ اليوم كتاريخ افتراضي للاستلام
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('receivedDate').value = formattedDate;
+            
+            // تحميل الأجهزة من localStorage عند بدء التحميل
+            let devices = JSON.parse(localStorage.getItem('devices')) || [];
+            
+            // إضافة جهاز جديد
+            document.getElementById('deviceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newDevice = {
+                    customerName: document.getElementById('customerName').value,
+                    customerPhone: document.getElementById('customerPhone').value,
+                    deviceType: document.getElementById('deviceType').value,
+                    deviceBrand: document.getElementById('deviceBrand').value,
+                    issue: document.getElementById('issue').value,
+                    receivedDate: document.getElementById('receivedDate').value,
+                    status: document.getElementById('status').value
+                };
+                
+                devices.push(newDevice);
+                localStorage.setItem('devices', JSON.stringify(devices));
+                
+                // إعادة تعيين النموذج
+                this.reset();
+                document.getElementById('receivedDate').value = formattedDate;
+                document.getElementById('status').value = 'مستلم';
+                
+                // إظهار تنبيه
+                alert('تم إضافة الجهاز بنجاح!');
+            });
+        });
+    </script>
+</body>
+</html>

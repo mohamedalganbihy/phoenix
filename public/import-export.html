@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة أجهزة الصيانة - استيراد وتصدير</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --ready: #9b59b6;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            min-width: 200px;
+        }
+        
+        button i {
+            margin-left: 8px;
+        }
+        
+        button:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-ready {
+            background: var(--ready);
+        }
+        
+        .btn-ready:hover {
+            background: #8e44ad;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-to-home i {
+            margin-right: 5px;
+        }
+        
+        .import-export-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .import-export-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .import-export-card h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .import-export-card p {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .file-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            background: rgba(52, 152, 219, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+        
+        .file-input-label i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .btn-lg {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+        
+        .success-message {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .import-export-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-laptop-medical"></i> نظام إدارة أجهزة الصيانة</h1>
+            <p>أداة متكاملة لإدارة طلبات الصيانة وتتبع حالة الأجهزة من الاستلام حتى التسليم</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <a href="devices(1).html" class="back-to-home"><i class="fas fa-arrow-right"></i> العودة للصفحة الرئيسية</a>
+        <h2 class="card-title"><i class="fas fa-file-import"></i> استيراد وتصدير البيانات</h2>
+        
+        <div class="import-export-container">
+            <div class="import-export-card">
+                <h3><i class="fas fa-file-export"></i> تصدير البيانات</h3>
+                <p>تصدير جميع بيانات الأجهزة إلى ملف JSON يمكنك استخدامه للنسخ الاحتياطي أو نقل البيانات بين الأجهزة</p>
+                <button class="btn-success btn-lg" id="exportBtn">
+                    <i class="fas fa-download"></i> تصدير البيانات
+                </button>
+                <div class="success-message" id="export-success">
+                    <i class="fas fa-check-circle"></i> تم تصدير البيانات بنجاح!
+                </div>
+            </div>
+            
+            <div class="import-export-card">
+                <h3><i class="fas fa-file-import"></i> استيراد البيانات</h3>
+                <p>استيراد بيانات الأجهزة من ملف JSON. سيتم استبدال البيانات الحالية بالبيانات المستوردة</p>
+                
+                <div class="file-input-container">
+                    <input type="file" id="importFile" accept=".json">
+                    <label for="importFile" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>اختر ملف JSON</span>
+                        <span class="file-name" id="fileName">لم يتم اختيار ملف</span>
+                    </label>
+                </div>
+                
+                <button class="btn-ready btn-lg" id="importBtn">
+                    <i class="fas fa-upload"></i> استيراد البيانات
+                </button>
+                
+                <div class="success-message" id="import-success">
+                    <i class="fas fa-check-circle"></i> تم استيراد البيانات بنجاح!
+                </div>
+                
+                <div class="error-message" id="import-error">
+                    <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء استيراد البيانات!
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>تم التطوير بواسطة: محل الصيانة الخاص بك &copy; <span id="currentYear"></span></p>
+            <p>نظام تتبع صيانة الأجهزة - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تعيين سنة حقوق النشر
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // تحميل الأجهزة من localStorage عند بدء التحميل
+            let devices = JSON.parse(localStorage.getItem('devices')) || [];
+            
+            // تصدير البيانات إلى ملف JSON
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const dataStr = JSON.stringify(devices, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'devices_data.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                // إظهار رسالة النجاح
+                const successMessage = document.getElementById('export-success');
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            });
+            
+            // استيراد البيانات من ملف JSON
+            document.getElementById('importBtn').addEventListener('click', function() {
+                const fileInput = document.getElementById('importFile');
+                if (!fileInput.files.length) {
+                    alert('الرجاء اختيار ملف');
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (Array.isArray(importedData)) {
+                            // استبدال البيانات الحالية بالبيانات المستوردة
+                            devices = importedData;
+                            localStorage.setItem('devices', JSON.stringify(devices));
+                            
+                            // إظهار رسالة النجاح
+                            const successMessage = document.getElementById('import-success');
+                            successMessage.style.display = 'block';
+                            
+                            // إخفاء رسائل الخطأ إذا كانت ظاهرة
+                            const errorMessage = document.getElementById('import-error');
+                            errorMessage.style.display = 'none';
+                            
+                            setTimeout(() => {
+                                successMessage.style.display = 'none';
+                            }, 3000);
+                            
+                            // إعادة تحميل الصفحة الرئيسية لتحديث البيانات
+                            setTimeout(() => {
+                                window.location.href = 'devices(1).html';
+                            }, 1000);
+                        } else {
+                            throw new Error('تنسيق الملف غير صحيح');
+                        }
+                    } catch (error) {
+                        // إظهار رسالة الخطأ
+                        const errorMessage = document.getElementById('import-error');
+                        errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء استيراد البيانات: ${error.message}`;
+                        errorMessage.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            errorMessage.style.display = 'none';
+                        }, 5000);
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            // عرض اسم الملف المختار
+            document.getElementById('importFile').addEventListener('change', function(e) {
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'لم يتم اختيار ملف';
+                document.getElementById('fileName').textContent = fileName;
+            });
+        });
+    </script>
+</body>
+</html>

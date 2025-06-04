@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>جميع الأجهزة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; color: #333; direction: rtl; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .card-title { font-size: 1.5rem; color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center; }
+        .card-title i { margin-left: 10px; }
+        .devices-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); }
+        .devices-table th { background: #2c3e50; color: white; padding: 15px; text-align: right; }
+        .devices-table td { padding: 15px; border-bottom: 1px solid #eee; }
+        .customer-name { font-size: 1.1rem; font-weight: 600; }
+        .no-devices { text-align: center; padding: 40px; color: #7f8c8d; }
+        .no-devices i { font-size: 3rem; margin-bottom: 20px; opacity: 0.3; }
+        .search-filter { display: flex; gap: 15px; margin-bottom: 20px; }
+        .search-filter input, .search-filter select { padding: 10px; border: 1px solid #ccc; border-radius: 8px; flex: 1; }
+        .action-buttons { display: flex; gap: 8px; }
+        .btn-danger { background: #e74c3c; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; }
+        .phone-link { color: #3498db; text-decoration: none; }
+        .phone-link:hover { text-decoration: underline; }
+        .delivery-date { color: #27ae60; font-weight: bold; }
+        
+        /* أنماط القائمة المنسدلة حسب الحالة */
+        .status-select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .status-select.received {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-color: #3498db;
+            color: #3498db;
+        }
+        .status-select.inprogress {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+        .status-select.ready {
+            background-color: rgba(155, 89, 182, 0.1);
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+        .status-select.completed {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+        .status-select option {
+            background-color: white;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="card-title"><i class="fas fa-list"></i> جميع الأجهزة</h2>
+        <div class="search-filter">
+            <input type="text" id="searchInput" placeholder="ابحث باسم العميل أو رقم الهاتف...">
+            <select id="statusFilter">
+                <option value="">جميع الحالات (غير المسلمة)</option>
+                <option value="مستلم">مستلم</option>
+                <option value="قيد الصيانة">قيد الصيانة</option>
+                <option value="جاهز للتسليم">جاهز للتسليم</option>
+                <option value="تم التسليم">تم التسليم</option>
+            </select>
+        </div>
+        <table class="devices-table">
+            <thead>
+                <tr>
+                    <th>اسم العميل</th>
+                    <th>رقم الهاتف</th>
+                    <th>نوع الجهاز</th>
+                    <th>وصف العطل</th>
+                    <th>تاريخ الاستلام</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="allDevicesTableBody"></tbody>
+        </table>
+        <div id="noAllDevicesMessage" class="no-devices" style="display: none;">
+            <i class="fas fa-laptop"></i>
+            <h3>لا توجد أجهزة مسجلة</h3>
+            <p>ابدأ بإضافة جهاز جديد من الصفحة الرئيسية</p>
+        </div>
+    </div>
+
+    <script>
+        let devices = JSON.parse(localStorage.getItem('devices')) || [];
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'مستلم': return 'received';
+                case 'قيد الصيانة': return 'inprogress';
+                case 'جاهز للتسليم': return 'ready';
+                case 'تم التسليم': return 'completed';
+                default: return '';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG');
+        }
+
+        function createDeviceRow(device, index) {
+            const statusClass = getStatusClass(device.status);
+            
+            return `
+                <tr>
+                    <td><span class="customer-name">${device.customerName}</span></td>
+                    <td><a href="tel:${device.customerPhone}" class="phone-link">${device.customerPhone}</a></td>
+                    <td>${device.deviceType}${device.deviceBrand ? ' - ' + device.deviceBrand : ''}</td>
+                    <td>${device.issue}</td>
+                    <td>${formatDate(device.receivedDate)}</td>
+                    <td>
+                        <select class="status-select ${statusClass}" data-index="${index}" onchange="updateDeviceStatus(${index}, this.value)">
+                            <option value="مستلم" ${device.status === 'مستلم' ? 'selected' : ''}>مستلم</option>
+                            <option value="قيد الصيانة" ${device.status === 'قيد الصيانة' ? 'selected' : ''}>قيد الصيانة</option>
+                            <option value="جاهز للتسليم" ${device.status === 'جاهز للتسليم' ? 'selected' : ''}>جاهز للتسليم</option>
+                            <option value="تم التسليم" ${device.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم</option>
+                        </select>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn-danger" onclick="deleteDevice(${index})"><i class="fas fa-trash"></i> حذف</button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function updateDeviceStatus(index, newStatus) {
+            devices[index].status = newStatus;
+            
+            if (newStatus === 'تم التسليم') {
+                const today = new Date();
+                devices[index].deliveryDate = today.toISOString().split('T')[0];
+                alert('تم تسجيل الجهاز كمُسلم بتاريخ: ' + formatDate(devices[index].deliveryDate));
+            }
+            
+            localStorage.setItem('devices', JSON.stringify(devices));
+            filterDevices(); // إعادة تطبيق الفلتر بعد التحديث
+        }
+
+        function renderDevices(devicesToShow) {
+            const tableBody = document.getElementById('allDevicesTableBody');
+            const noData = document.getElementById('noAllDevicesMessage');
+
+            if (devicesToShow.length === 0) {
+                tableBody.innerHTML = '';
+                noData.style.display = 'block';
+                return;
+            }
+
+            noData.style.display = 'none';
+            tableBody.innerHTML = devicesToShow.map((d, i) => createDeviceRow(d, i)).join('');
+        }
+
+        function deleteDevice(index) {
+            if (confirm('هل أنت متأكد من حذف هذا الجهاز؟')) {
+                devices.splice(index, 1);
+                localStorage.setItem('devices', JSON.stringify(devices));
+                filterDevices();
+                alert('تم حذف الجهاز بنجاح');
+            }
+        }
+
+        function filterDevices() {
+            const text = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            let filtered = devices;
+
+            // الفلتر الأساسي: إخفاء الأجهزة المسلمة ما لم يتم اختيار "تم التسليم" صراحة
+            if (status !== 'تم التسليم') {
+                filtered = filtered.filter(d => d.status !== 'تم التسليم');
+            }
+
+            if (text) {
+                filtered = filtered.filter(d => 
+                    d.customerName.toLowerCase().includes(text) ||
+                    (d.customerPhone && d.customerPhone.includes(text)) ||
+                    (d.deviceType && d.deviceType.toLowerCase().includes(text)) ||
+                    (d.deviceBrand && d.deviceBrand.toLowerCase().includes(text))
+                );
+            }
+
+            if (status && status !== 'تم التسليم') {
+                filtered = filtered.filter(d => d.status === status);
+            } else if (status === 'تم التسليم') {
+                filtered = filtered.filter(d => d.status === 'تم التسليم');
+            }
+
+            renderDevices(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterDevices);
+        document.getElementById('statusFilter').addEventListener('change', filterDevices);
+
+        // التحميل الأولي للبيانات مع تطبيق الفلتر
+        filterDevices();
+    </script>
+</body>
+</html>
