@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>بحث في الشيت</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+body{
+  font-family: Tahoma, sans-serif;
+  background: #eef2f7;
+  direction: rtl;
+  padding: 20px;
+}
+.box{
+  max-width: 1000px;
+  margin: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h2{
+  text-align: center;
+  margin-bottom: 20px;
+  color:#333;
+}
+input{
+  width: 65%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  padding: 12px 18px;
+  font-size:16px;
+  margin-left:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background: #4CAF50;
+  color: #fff;
+  transition: background 0.3s;
+}
+button:hover{ background: #45a049; }
+
+#status{
+  margin-top:12px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.card{
+  background: #fff;
+  border-radius:10px;
+  padding:15px;
+  margin-top:18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-size: 18px;
+  line-height:1.6;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.card div{
+  padding:6px 0;
+}
+
+/* ✅ أول قيمة في الصف */
+.first-value{
+  font-size:22px;
+  font-weight:bold;
+  color:#1976D2;
+  border-bottom:1px dashed #ccc;
+  padding-bottom:8px;
+  margin-bottom:6px;
+}
+
+.highlight{
+  background: yellow;
+  font-weight: bold;
+  border-radius: 3px;
+  padding:0 3px;
+}
+
+/* ✅ زر المشاركة */
+.share-btn{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#ff9800;
+  border:none;
+  color:#fff;
+  padding:6px 10px;
+  font-size:14px;
+  border-radius:5px;
+  cursor:pointer;
+}
+.share-btn:hover{ background:#fb8c00; }
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>🔍 البحث داخل الشيت</h2>
+
+  <input id="q" placeholder="اكتب أي كلمة">
+  <button onclick="search()">بحث</button>
+  <button onclick="showAll()">عرض الكل</button>
+
+  <div id="status">⏳ جاري تحميل البيانات...</div>
+  <div id="result"></div>
+</div>
+
+<script>
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/1WyiqUcwgnIwgpO73dxsUDl9mA9KCh0sgeCiNx5oAQ4o/export?format=csv&gid=0";
+
+let data = [];
+
+fetch(CSV_URL)
+.then(r => r.text())
+.then(csv => {
+  csv = csv.replace(/^\uFEFF/, "");
+  data = csv.split(/\r?\n/).map(r =>
+    r.split(",").map(c => c.replace(/^"|"$/g,"").trim())
+  );
+
+  document.getElementById("status").innerText =
+    "✅ تم تحميل البيانات بنجاح";
+})
+.catch(()=>{
+  document.getElementById("status").innerText =
+    "❌ فشل تحميل البيانات";
+});
+
+function highlightMatch(text, term){
+  if(!term) return text;
+  const re = new RegExp(`(${term})`, 'gi');
+  return text.replace(re, '<span class="highlight">$1</span>');
+}
+
+function search(){
+  const q = document.getElementById("q").value.toLowerCase().trim();
+  if(!q){ alert("اكتب كلمة للبحث"); return; }
+
+  const results = data.slice(1).filter(r =>
+    r.some(c => (c || "").toLowerCase().includes(q))
+  );
+
+  document.getElementById("status").innerHTML =
+    "🔎 عدد النتائج: <b>" + results.length + "</b>";
+
+  drawCards(results, q);
+}
+
+function showAll(){
+  drawCards(data.slice(1));
+  document.getElementById("status").innerHTML =
+    "📄 تم عرض جميع البيانات";
+}
+
+/* ✅ مشاركة محتوى الكارت */
+function shareCard(text){
+  if(navigator.share){
+    navigator.share({
+      title: "نتيجة من الشيت",
+      text: text
+    });
+  }else{
+    alert("ميزة المشاركة غير مدعومة على هذا الجهاز");
+  }
+}
+
+function drawCards(rows, term=""){
+  let html = "";
+
+  if(rows.length === 0){
+    html = "<p style='text-align:center'>لا توجد نتائج</p>";
+  }
+
+  rows.forEach(row=>{
+    const shareText = row.join(" | ");
+    html += `
+      <div class="card">
+        <button class="share-btn" onclick='shareCard("${shareText.replace(/"/g,"'")}")'>مشاركة</button>
+    `;
+
+    row.forEach((cell, i)=>{
+      if(i === 0){
+        html += `<div class="first-value">${highlightMatch(cell, term)}</div>`;
+      }else{
+        html += `<div>${highlightMatch(cell, term)}</div>`;
+      }
+    });
+
+    html += `</div>`;
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
