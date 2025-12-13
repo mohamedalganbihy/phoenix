@@ -1,212 +1,538 @@
 <!doctype html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<title>بحث في الشيت</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الرئيسية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-body{
-  font-family: Tahoma, sans-serif;
-  background: #eef2f7;
-  direction: rtl;
-  padding: 20px;
-}
-.box{
-  max-width: 1000px;
-  margin: auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-h2{
-  text-align: center;
-  margin-bottom: 20px;
-  color:#333;
-}
-input{
-  width: 65%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-button{
-  padding: 12px 18px;
-  font-size:16px;
-  margin-left:5px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background: #4CAF50;
-  color: #fff;
-  transition: background 0.3s;
-}
-button:hover{ background: #45a049; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      direction: rtl;
+      min-height: 100vh;
+      color: #333;
+    }
 
-#status{
-  margin-top:12px;
-  font-weight:bold;
-  text-align:center;
-}
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-.card{
-  background: #fff;
-  border-radius:10px;
-  padding:15px;
-  margin-top:18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  font-size: 18px;
-  line-height:1.6;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-}
-.card:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #764ba2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.card div{
-  padding:6px 0;
-}
+    .profile {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
 
-/* ✅ أول قيمة في الصف */
-.first-value{
-  font-size:22px;
-  font-weight:bold;
-  color:#1976D2;
-  border-bottom:1px dashed #ccc;
-  padding-bottom:8px;
-  margin-bottom:6px;
-}
+    .profile:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.6);
+    }
 
-.highlight{
-  background: yellow;
-  font-weight: bold;
-  border-radius: 3px;
-  padding:0 3px;
-}
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 18px;
+    }
 
-/* ✅ زر المشاركة */
-.share-btn{
-  position:absolute;
-  top:10px;
-  left:10px;
-  background:#ff9800;
-  border:none;
-  color:#fff;
-  padding:6px 10px;
-  font-size:14px;
-  border-radius:5px;
-  cursor:pointer;
-}
-.share-btn:hover{ background:#fb8c00; }
+    /* Welcome Section */
+    .welcome-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-</style>
-</head>
+    .welcome-section h2 {
+      color: #764ba2;
+      margin-bottom: 12px;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
 
-<body>
+    .welcome-section p {
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 700px;
+      margin: 0 auto;
+    }
 
-<div class="box">
-  <h2>🔍 البحث داخل الشيت</h2>
+    /* Grid Container */
+    .grid-container {
+      background: white;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      margin-bottom: 35px;
+    }
 
-  <input id="q" placeholder="اكتب أي كلمة">
-  <button onclick="search()">بحث</button>
-  <button onclick="showAll()">عرض الكل</button>
+    .grid-title {
+      font-size: 1.4rem;
+      color: #764ba2;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0f0f0;
+    }
 
-  <div id="status">⏳ جاري تحميل البيانات...</div>
-  <div id="result"></div>
-</div>
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
 
-<script>
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/1WyiqUcwgnIwgpO73dxsUDl9mA9KCh0sgeCiNx5oAQ4o/export?format=csv&gid=0";
+    /* Card - تصغير الحجم */
+    .card {
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+      border: 1px solid #f0f0f0;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
 
-let data = [];
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+      border-color: #667eea;
+    }
 
-fetch(CSV_URL)
-.then(r => r.text())
-.then(csv => {
-  csv = csv.replace(/^\uFEFF/, "");
-  data = csv.split(/\r?\n/).map(r =>
-    r.split(",").map(c => c.replace(/^"|"$/g,"").trim())
-  );
+    .card-image {
+      height: 140px; /* تصغير من 180px */
+      overflow: hidden;
+      position: relative;
+    }
 
-  document.getElementById("status").innerText =
-    "✅ تم تحميل البيانات بنجاح";
-})
-.catch(()=>{
-  document.getElementById("status").innerText =
-    "❌ فشل تحميل البيانات";
-});
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
 
-function highlightMatch(text, term){
-  if(!term) return text;
-  const re = new RegExp(`(${term})`, 'gi');
-  return text.replace(re, '<span class="highlight">$1</span>');
-}
+    .card:hover .card-image img {
+      transform: scale(1.05);
+    }
 
-function search(){
-  const q = document.getElementById("q").value.toLowerCase().trim();
-  if(!q){ alert("اكتب كلمة للبحث"); return; }
+    .card-image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.25));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-  const results = data.slice(1).filter(r =>
-    r.some(c => (c || "").toLowerCase().includes(q))
-  );
+    .card:hover .card-image-overlay {
+      opacity: 1;
+    }
 
-  document.getElementById("status").innerHTML =
-    "🔎 عدد النتائج: <b>" + results.length + "</b>";
+    .card-image-overlay i {
+      color: white;
+      font-size: 2rem; /* تصغير من 2.5rem */
+      background: rgba(102, 126, 234, 0.8);
+      width: 50px; /* تصغير من 60px */
+      height: 50px; /* تصغير من 60px */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  drawCards(results, q);
-}
+    .card-content {
+      padding: 16px; /* تصغير من 20px */
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-function showAll(){
-  drawCards(data.slice(1));
-  document.getElementById("status").innerHTML =
-    "📄 تم عرض جميع البيانات";
-}
+    .card-title {
+      font-size: 1.15rem; /* تصغير من 1.3rem */
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+      line-height: 1.35;
+      text-align: center;
+    }
 
-/* ✅ مشاركة محتوى الكارت */
-function shareCard(text){
-  if(navigator.share){
-    navigator.share({
-      title: "نتيجة من الشيت",
-      text: text
-    });
-  }else{
-    alert("ميزة المشاركة غير مدعومة على هذا الجهاز");
-  }
-}
+    .card-description {
+      font-size: 0.9rem; /* تصغير من 1rem */
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      text-align: center;
+    }
 
-function drawCards(rows, term=""){
-  let html = "";
+    .card-badge {
+      display: inline-block;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      padding: 5px 12px; /* تصغير من 6px 15px */
+      border-radius: 18px;
+      font-size: 0.85rem; /* تصغير من 0.9rem */
+      font-weight: 600;
+      align-self: center;
+      margin-top: 8px;
+    }
 
-  if(rows.length === 0){
-    html = "<p style='text-align:center'>لا توجد نتائج</p>";
-  }
+    /* Footer */
+    footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      color: #666;
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-  rows.forEach(row=>{
-    const shareText = row.join(" | ");
-    html += `
-      <div class="card">
-        <button class="share-btn" onclick='shareCard("${shareText.replace(/"/g,"'")}")'>مشاركة</button>
-    `;
+    footer p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
 
-    row.forEach((cell, i)=>{
-      if(i === 0){
-        html += `<div class="first-value">${highlightMatch(cell, term)}</div>`;
-      }else{
-        html += `<div>${highlightMatch(cell, term)}</div>`;
+    /* Responsive */
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
       }
+      
+      .main-container {
+        padding: 0 15px;
+      }
+      
+      .welcome-section,
+      .grid-container {
+        padding: 20px;
+      }
+      
+      header {
+        padding: 12px 16px;
+      }
+      
+      header h1 {
+        font-size: 1.3rem;
+      }
+      
+      .profile {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .welcome-section h2 {
+        font-size: 1.5rem;
+      }
+      
+      .grid-title {
+        font-size: 1.25rem;
+      }
+      
+      .card-image {
+        height: 130px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+      }
+      
+      .welcome-section h2 {
+        font-size: 1.35rem;
+      }
+      
+      .welcome-section p {
+        font-size: 0.9rem;
+      }
+      
+      .grid-title {
+        font-size: 1.2rem;
+      }
+      
+      .card-title {
+        font-size: 1.05rem;
+      }
+      
+      .card-description {
+        font-size: 0.85rem;
+      }
+      
+      .card-image {
+        height: 120px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .card-image {
+        height: 140px;
+      }
+    }
+
+    /* Animation for cards */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeInUp 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    /* Delay for each card */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.15s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.25s; }
+    .card:nth-child(5) { animation-delay: 0.3s; }
+    .card:nth-child(6) { animation-delay: 0.35s; }
+    .card:nth-child(7) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-home"></i> الصفحة الرئيسية</h1>
+    <div class="profile">ع</div>
+  </header>
+  
+  <main class="main-container">
+    <div class="welcome-section">
+      <h2>مرحباً بك في نظامنا المتكامل</h2>
+      <p>استكشف جميع الخدمات والأقسام المتاحة من خلال البطاقات أدناه</p>
+    </div>
+    
+    <div class="grid-container">
+      <div class="grid-title">
+        <i class="fas fa-th-large"></i> جميع الأقسام
+      </div>
+      
+      <div class="grid">
+        <!-- كرت 1 -->
+        <a href="page1.html" class="card">
+          <div class="card-image">
+            <img src="images/img1.jpg" alt="البحث في الشيت" />
+            <div class="card-image-overlay">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">البحث في الشيت</div>
+            <div class="card-description">ابحث في قاعدة البيانات بسرعة</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+
+        <!-- كرت 2 -->
+        <a href="page2.html" class="card">
+          <div class="card-image">
+            <img src="images/img2.jpg" alt="اسم القسم الثاني" />
+            <div class="card-image-overlay">
+              <i class="fas fa-cogs"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم الثاني</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">قريباً</span>
+          </div>
+        </a>
+
+        <!-- كرت 3 -->
+        <a href="page3.html" class="card">
+          <div class="card-image">
+            <img src="images/img3.jpg" alt="اسم القسم الثالث" />
+            <div class="card-image-overlay">
+              <i class="fas fa-heart"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم الثالث</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+
+        <!-- كرت 4 -->
+        <a href="page4.html" class="card">
+          <div class="card-image">
+            <img src="images/img4.jpg" alt="اسم القسم الرابع" />
+            <div class="card-image-overlay">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم الرابع</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+
+        <!-- كرت 5 -->
+        <a href="page5.html" class="card">
+          <div class="card-image">
+            <img src="images/img5.jpg" alt="اسم القسم الخامس" />
+            <div class="card-image-overlay">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم الخامس</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+
+        <!-- كرت 6 -->
+        <a href="page6.html" class="card">
+          <div class="card-image">
+            <img src="images/img6.jpg" alt="اسم القسم السادس" />
+            <div class="card-image-overlay">
+              <i class="fas fa-tools"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم السادس</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+
+        <!-- كرت 7 -->
+        <a href="page7.html" class="card">
+          <div class="card-image">
+            <img src="images/img7.jpg" alt="اسم القسم السابع" />
+            <div class="card-image-overlay">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card-title">القسم السابع</div>
+            <div class="card-description">وصف مختصر للقسم</div>
+            <span class="card-badge">متاح</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>جميع الحقوق محفوظة © 2023 | النظام المتكامل</p>
+  </footer>
+
+  <script>
+    // إضافة تأثير ظهور عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      // تأثير للهيدر
+      const header = document.querySelector('header');
+      header.style.opacity = '0';
+      header.style.transform = 'translateY(-15px)';
+      
+      setTimeout(() => {
+        header.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        header.style.opacity = '1';
+        header.style.transform = 'translateY(0)';
+      }, 200);
+      
+      // تأثير للقسم الترحيبي
+      const welcomeSection = document.querySelector('.welcome-section');
+      welcomeSection.style.opacity = '0';
+      
+      setTimeout(() => {
+        welcomeSection.style.transition = 'opacity 0.5s ease';
+        welcomeSection.style.opacity = '1';
+      }, 300);
+      
+      // إضافة تأثير عند المرور على البطاقات
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.zIndex = '10';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.zIndex = '1';
+        });
+      });
+      
+      // إذا كانت الصور غير موجودة، استبدالها بأيقونات
+      const images = document.querySelectorAll('.card-image img');
+      images.forEach(img => {
+        img.onerror = function() {
+          this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iMTAiIGZpbGw9IiNlM2U5ZmYiLz4KPHBhdGggZD0iTTIwIDI0SDRWNTZINTZWMjRINDBWMTBIMjBWMjRaIiBmaWxsPSIjNjc2ZWVhIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI2IiBmaWxsPSIjNjc2ZWVhIi8+CjxwYXRoIGQ9Ik00MCA0NEMzOS40NzcgNDQgMzkgNDMuNTIyIDM5IDQzVjM5QzM5IDM4LjQ3OCAzOS40NzcgMzggNDAgMzhINDBDNDAuNTIyIDM4IDQxIDM4LjQ3OCA0MSAzOVY0M0M0MSA0My41MjIgNDAuNTIyIDQ0IDQwIDQ0WiIgZmlsbD0iIzY3NmVlYSIvPgo8L3N2Zz4K';
+        };
+      });
     });
-
-    html += `</div>`;
-  });
-
-  document.getElementById("result").innerHTML = html;
-}
-</script>
-
+  </script>
 </body>
 </html>

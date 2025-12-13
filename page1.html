@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>البحث في الشيت</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+body{
+  font-family: Tahoma, sans-serif;
+  background: #eef2f7;
+  direction: rtl;
+  padding: 20px;
+}
+.box{
+  max-width: 1000px;
+  margin: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h2{
+  text-align: center;
+  margin-bottom: 20px;
+  color:#333;
+}
+input{
+  width: 70%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  padding: 12px 18px;
+  font-size:16px;
+  margin-left:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background: #4CAF50;
+  color: #fff;
+  transition: background 0.3s;
+}
+button:hover{ background: #45a049; }
+
+#status{
+  margin-top:12px;
+  font-weight:bold;
+  text-align:center;
+}
+
+.card{
+  background: #fff;
+  border-radius:10px;
+  padding:15px;
+  margin-top:12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-size: 18px;
+  line-height:1.6;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align:center;
+}
+.card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.first-card img{
+  width:100%;
+  max-height:220px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+
+.first-title{
+  font-size:20px;
+  font-weight:bold;
+  color:#1976D2;
+}
+
+.highlight{
+  background: yellow;
+  font-weight: bold;
+  border-radius: 3px;
+  padding:0 3px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>🔍 البحث داخل الشيت</h2>
+
+  <input id="q" placeholder="اكتب أي كلمة">
+  <button onclick="search()">بحث</button>
+
+  <div id="status">⏳ جاري تحميل البيانات...</div>
+  <div id="result"></div>
+</div>
+
+<script>
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/1WyiqUcwgnIwgpO73dxsUDl9mA9KCh0sgeCiNx5oAQ4o/export?format=csv&gid=0";
+
+let data = [];
+
+fetch(CSV_URL)
+.then(r => r.text())
+.then(csv => {
+  csv = csv.replace(/^\uFEFF/, "");
+  data = csv.split(/\r?\n/).map(r =>
+    r.split(",").map(c => c.replace(/^\"|\"$/g,"").trim())
+  );
+
+  document.getElementById("status").innerText =
+    "✅ تم تحميل البيانات بنجاح";
+})
+.catch(()=>{
+  document.getElementById("status").innerText =
+    "❌ فشل تحميل البيانات";
+});
+
+function highlightMatch(text, term){
+  if(!term) return text;
+  const re = new RegExp(`(${term})`, 'gi');
+  return text.replace(re, '<span class="highlight">$1</span>');
+}
+
+function search(){
+  const q = document.getElementById("q").value.toLowerCase().trim();
+  if(!q){ alert("اكتب كلمة للبحث"); return; }
+
+  const results = data.slice(1).filter(r =>
+    r.some(c => (c || "").toLowerCase().includes(q))
+  );
+
+  document.getElementById("status").innerHTML =
+    "🔎 عدد النتائج: <b>" + results.length + "</b>";
+
+  drawCards(results, q);
+}
+
+/* ✅ أول قيمة كارت بصورة + منع القيم الفارغة */
+function drawCards(rows, term=""){
+  let html = "";
+
+  if(rows.length === 0){
+    html = "<p style='text-align:center'>لا توجد نتائج</p>";
+  }
+
+  rows.forEach(row=>{
+    let hasValue = row.some(cell => cell && cell.trim() !== "");
+    if(hasValue){
+      html += `<div style="margin-top:30px"></div>`;
+    }
+
+    row.forEach((cell, i)=>{
+      if(!cell || cell.trim() === "") return;
+
+      // ✅ أول قيمة = كارت بصورة
+      if(i === 0){
+
+        const imgURL = cell.startsWith("http") ? cell :
+        "https://via.placeholder.com/600x300?text=No+Image";
+
+        html += `
+          <div class="card first-card">
+            <img src="${imgURL}" onerror="this.src='https://via.placeholder.com/600x300?text=No+Image'">
+            <div class="first-title">صورة العنصر</div>
+          </div>
+        `;
+      }else{
+
+        html += `
+          <div class="card">
+            ${highlightMatch(cell, term)}
+          </div>
+        `;
+      }
+    });
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
