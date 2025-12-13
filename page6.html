@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="utf-8">
-<title>إدارة العملاء والمطلوب من المحل مع الصيانة</title>
+<title>نظام إدارة العملاء والطلبات والصيانة - النسخة المتكاملة</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -238,6 +238,28 @@ body {
 .btn-warning:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4);
+}
+
+.btn-info {
+  background: linear-gradient(to right, #2196F3, #1976D2);
+  color: white;
+  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.btn-info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
+}
+
+.btn-danger {
+  background: linear-gradient(to right, #F44336, #D32F2F);
+  color: white;
+  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
 }
 
 /* تصميم عرض البيانات */
@@ -796,6 +818,77 @@ body {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* مؤشر التحميل */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  color: white;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #667eea;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* إعدادات النظام */
+.settings-panel {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.settings-header h3 {
+  color: #764ba2;
+  font-size: 1.4rem;
+}
+
+.toggle-settings {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+}
+
+.settings-content {
+  display: none;
+}
+
+.settings-content.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
 </style>
 </head>
 
@@ -804,7 +897,63 @@ body {
 <div class="container">
   <div class="header">
     <h1><i class="fas fa-users"></i> نظام إدارة العملاء والطلبات والصيانة</h1>
-    <p>إدارة كاملة للعملاء، طلبات المحل، واستلام الأجهزة للصيانة بسهولة وسرعة</p>
+    <p>إدارة كاملة للعملاء، طلبات المحل، واستلام الأجهزة للصيانة مع ربط مباشر بجوجل شيت</p>
+  </div>
+  
+  <!-- إعدادات النظام -->
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h3><i class="fas fa-cog"></i> إعدادات النظام</h3>
+      <button class="toggle-settings" id="toggle-settings">
+        <i class="fas fa-sliders-h"></i> إظهار/إخفاء الإعدادات
+      </button>
+    </div>
+    
+    <div class="settings-content" id="settings-content">
+      <div id="settings-alert" class="alert" style="display: none;"></div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="script-url"><i class="fas fa-link"></i> رابط تطبيق Google Apps Script</label>
+          <input type="text" id="script-url" placeholder="أدخل رابط Web App الخاص بك">
+          <small style="color: #666; margin-top: 5px;">رابط Web App من نشر Google Apps Script</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="google-sheet-id"><i class="fab fa-google"></i> رابط جوجل شيت</label>
+          <input type="text" id="google-sheet-id" placeholder="أدخل رابط جوجل شيت">
+          <small style="color: #666; margin-top: 5px;">للتأكد من إنشاء الأوراق الصحيحة</small>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn btn-info" onclick="saveSystemSettings()">
+          <i class="fas fa-save"></i> حفظ الإعدادات
+        </button>
+        <button class="btn btn-success" onclick="testConnection()">
+          <i class="fas fa-plug"></i> اختبار الاتصال
+        </button>
+        <button class="btn btn-warning" onclick="setupGoogleSheet()">
+          <i class="fas fa-magic"></i> إعداد الجدول تلقائياً
+        </button>
+      </div>
+      
+      <div class="form-row" style="margin-top: 20px;">
+        <div class="form-group">
+          <label>حالة الاتصال:</label>
+          <div id="connection-status" style="padding: 10px; border-radius: 8px; background: #f5f5f5; margin-top: 5px;">
+            <span style="color: #888;">لم يتم اختبار الاتصال بعد</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>إحصائيات النظام:</label>
+          <div id="system-stats" style="padding: 10px; border-radius: 8px; background: #f5f5f5; margin-top: 5px;">
+            <span style="color: #888;">جاري التحميل...</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   
   <div class="tabs-container">
@@ -1071,6 +1220,18 @@ body {
           <input type="text" class="search-box" id="search-input" placeholder="ابحث عن عميل أو طلب أو جهاز صيانة...">
         </div>
         
+        <div class="form-actions" style="margin-bottom: 20px;">
+          <button class="btn btn-info" onclick="loadAllData()">
+            <i class="fas fa-sync-alt"></i> تحديث البيانات
+          </button>
+          <button class="btn btn-success" onclick="exportToExcel()">
+            <i class="fas fa-file-excel"></i> تصدير البيانات
+          </button>
+          <button class="btn btn-danger" onclick="clearAllData()" style="display: none;" id="clear-data-btn">
+            <i class="fas fa-trash"></i> حذف كل البيانات (محلياً)
+          </button>
+        </div>
+        
         <div class="stats-container">
           <div class="stat-card">
             <h3 id="total-customers">0</h3>
@@ -1133,20 +1294,33 @@ body {
   </div>
   
   <div class="footer">
-    <p>جميع الحقوق محفوظة © 2025 | نظام إدارة العملاء والطلبات والصيانة</p>
+    <p>جميع الحقوق محفوظة © 2025 | نظام إدارة العملاء والطلبات والصيانة - النسخة المتكاملة</p>
   </div>
 </div>
 
+<!-- مؤشر التحميل -->
+<div id="loading-overlay" class="loading-overlay" style="display: none;">
+  <div class="spinner"></div>
+  <p id="loading-message">جاري معالجة طلبك...</p>
+</div>
+
 <script>
-// بيانات التطبيق (سيتم تخزينها في localStorage)
-let customers = JSON.parse(localStorage.getItem('customers')) || [];
-let orders = JSON.parse(localStorage.getItem('orders')) || [];
-let maintenance = JSON.parse(localStorage.getItem('maintenance')) || [];
+// إعدادات النظام
+let systemSettings = {
+  scriptUrl: 'https://script.google.com/macros/s/AKfycby8gnEzm5R_eLwBfj7B75i2wjjIDJGf-VsbIYAMw13FxN3CEN6nI060Xg_UUEHroVFGOA/exec',
+  sheetId: '1GZ9IoXTSOnEW0LCkT9XApOT62HlSPBdnTaccOM8UnnU'
+};
+
+// بيانات التطبيق (التخزين المؤقت)
+let customers = [];
+let orders = [];
+let maintenance = [];
 
 // عناصر DOM
 const customerAlert = document.getElementById('customer-alert');
 const orderAlert = document.getElementById('order-alert');
 const maintenanceAlert = document.getElementById('maintenance-alert');
+const settingsAlert = document.getElementById('settings-alert');
 const searchInput = document.getElementById('search-input');
 const customersContainer = document.getElementById('customers-container');
 const maintenanceContainer = document.getElementById('maintenance-container');
@@ -1156,6 +1330,13 @@ const maintenanceCustomerSelect = document.getElementById('maintenance-customer'
 const noCustomers = document.getElementById('no-customers');
 const noMaintenance = document.getElementById('no-maintenance');
 const noOrders = document.getElementById('no-orders');
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingMessage = document.getElementById('loading-message');
+const connectionStatus = document.getElementById('connection-status');
+const systemStats = document.getElementById('system-stats');
+const toggleSettingsBtn = document.getElementById('toggle-settings');
+const settingsContent = document.getElementById('settings-content');
+const clearDataBtn = document.getElementById('clear-data-btn');
 
 // عناصر الإحصائيات
 const totalCustomersEl = document.getElementById('total-customers');
@@ -1171,11 +1352,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('order-date').value = today;
   document.getElementById('maintenance-date').value = today;
   
-  // تحميل العملاء في قوائم الاختيار
-  loadCustomersToSelect();
-  
-  // تحديث عرض البيانات
-  updateView();
+  // تحميل إعدادات النظام
+  loadSystemSettings();
   
   // تهيئة نظام التبويبات
   initTabs();
@@ -1183,11 +1361,943 @@ document.addEventListener('DOMContentLoaded', function() {
   // إضافة مستمع للبحث
   searchInput.addEventListener('input', updateView);
   
-  // عرض رسالة ترحيبية
-  if (customers.length === 0) {
-    showAlert(customerAlert, 'مرحباً بك! يمكنك بدء إضافة عملائك من هنا.', 'info');
+  // إعدادات التبديل
+  toggleSettingsBtn.addEventListener('click', function() {
+    settingsContent.classList.toggle('show');
+    this.innerHTML = settingsContent.classList.contains('show') ? 
+      '<i class="fas fa-sliders-h"></i> إخفاء الإعدادات' : 
+      '<i class="fas fa-sliders-h"></i> إظهار/إخفاء الإعدادات';
+  });
+  
+  // عرض زر حذف البيانات إذا كان هناك بيانات محلية
+  checkLocalData();
+  
+  // محاولة تحميل البيانات إذا كان هناك رابط سكريبت محفوظ
+  if (systemSettings.scriptUrl) {
+    showLoading('جاري الاتصال بالخادم...');
+    setTimeout(() => {
+      loadAllData();
+    }, 500);
+  } else {
+    showAlert(customerAlert, 'يرجى إعداد رابط تطبيق Google Apps Script أولاً', 'info');
   }
 });
+
+// تحميل إعدادات النظام
+function loadSystemSettings() {
+  document.getElementById('script-url').value = systemSettings.scriptUrl;
+  document.getElementById('google-sheet-id').value = systemSettings.sheetId;
+  
+  // عرض حالة الإعدادات
+  if (systemSettings.scriptUrl) {
+    connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم حفظ الإعدادات</span>';
+  }
+}
+
+// حفظ إعدادات النظام
+function saveSystemSettings() {
+  const scriptUrl = document.getElementById('script-url').value.trim();
+  const sheetId = document.getElementById('google-sheet-id').value.trim();
+  
+  if (!scriptUrl) {
+    showAlert(settingsAlert, 'يرجى إدخال رابط تطبيق Google Apps Script', 'error');
+    return;
+  }
+  
+  systemSettings.scriptUrl = scriptUrl;
+  systemSettings.sheetId = sheetId;
+  
+  localStorage.setItem('systemSettings', JSON.stringify(systemSettings));
+  
+  showAlert(settingsAlert, 'تم حفظ إعدادات النظام بنجاح!', 'success');
+  connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم حفظ الإعدادات</span>';
+  
+  // اختبار الاتصال تلقائياً
+  setTimeout(() => {
+    testConnection();
+  }, 1000);
+}
+
+// اختبار الاتصال بالخادم
+async function testConnection() {
+  if (!systemSettings.scriptUrl) {
+    showAlert(settingsAlert, 'يرجى إدخال رابط تطبيق Google Apps Script أولاً', 'error');
+    return;
+  }
+  
+  showLoading('جاري اختبار الاتصال بالخادم...');
+  
+  try {
+    const response = await callGoogleScript('getStats');
+    
+    if (response.success) {
+      hideLoading();
+      connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> الاتصال ناجح - الخادم يعمل</span>';
+      showAlert(settingsAlert, 'تم الاتصال بالخادم بنجاح!', 'success');
+      
+      // تحديث إحصائيات النظام
+      updateSystemStats(response.data);
+      
+    } else {
+      hideLoading();
+      connectionStatus.innerHTML = '<span style="color: #F44336;"><i class="fas fa-times-circle"></i> فشل الاتصال بالخادم</span>';
+      showAlert(settingsAlert, 'فشل الاتصال بالخادم: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Connection test failed:', error);
+    connectionStatus.innerHTML = '<span style="color: #F44336;"><i class="fas fa-times-circle"></i> فشل الاتصال: ' + error.message + '</span>';
+    showAlert(settingsAlert, 'فشل الاتصال: ' + error.message, 'error');
+  }
+}
+
+// إعداد الجدول تلقائياً
+async function setupGoogleSheet() {
+  if (!systemSettings.sheetId) {
+    showAlert(settingsAlert, 'يرجى إدخال رابط جوجل شيت أولاً', 'error');
+    return;
+  }
+  
+  showLoading('جاري إعداد الجدول تلقائياً...');
+  
+  try {
+    // إنشاء الأوراق من خلال إضافة بيانات تجريبية
+    const testCustomer = {
+      action: 'addCustomer',
+      name: 'عميل تجريبي',
+      phone: '0512345678',
+      email: 'test@example.com',
+      type: 'عادي'
+    };
+    
+    const response = await callGoogleScript('addCustomer', testCustomer);
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(settingsAlert, 'تم إعداد الجدول بنجاح! تم إنشاء الأوراق المطلوبة.', 'success');
+      connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم إعداد الجدول بنجاح</span>';
+      
+      // تحميل البيانات بعد الإعداد
+      setTimeout(() => {
+        loadAllData();
+      }, 1500);
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Setup failed:', error);
+    showAlert(settingsAlert, 'فشل إعداد الجدول: ' + error.message, 'error');
+  }
+}
+
+// تحديث إحصائيات النظام
+function updateSystemStats(stats) {
+  const statsText = `
+    العملاء: ${stats.totalCustomers || 0}<br>
+    الطلبات: ${stats.totalOrders || 0}<br>
+    الصيانة: ${stats.totalMaintenance || 0}<br>
+    الصيانة المعلقة: ${stats.pendingMaintenance || 0}
+  `;
+  
+  systemStats.innerHTML = statsText;
+}
+
+// استدعاء Google Apps Script
+async function callGoogleScript(action, params = {}) {
+  if (!systemSettings.scriptUrl) {
+    throw new Error('لم يتم تحديد رابط تطبيق Google Apps Script');
+  }
+  
+  // بناء URL مع المعاملات
+  let url = systemSettings.scriptUrl;
+  const allParams = { action, ...params };
+  const queryString = Object.keys(allParams)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(allParams[key])}`)
+    .join('&');
+  
+  url += (url.includes('?') ? '&' : '?') + queryString;
+  
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    throw new Error(`فشل الطلب: ${response.status} ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return data;
+}
+
+// تحميل جميع البيانات
+async function loadAllData() {
+  if (!systemSettings.scriptUrl) {
+    showAlert(settingsAlert, 'يرجى إعداد رابط تطبيق Google Apps Script أولاً', 'error');
+    return;
+  }
+  
+  showLoading('جاري تحميل البيانات من الخادم...');
+  
+  try {
+    // تحميل العملاء
+    const customersResponse = await callGoogleScript('getCustomers');
+    if (customersResponse.success) {
+      customers = customersResponse.data || [];
+      localStorage.setItem('customers_backup', JSON.stringify(customers));
+    }
+    
+    // تحميل الطلبات
+    const ordersResponse = await callGoogleScript('getOrders');
+    if (ordersResponse.success) {
+      orders = ordersResponse.data || [];
+      localStorage.setItem('orders_backup', JSON.stringify(orders));
+    }
+    
+    // تحميل الصيانة
+    const maintenanceResponse = await callGoogleScript('getMaintenance');
+    if (maintenanceResponse.success) {
+      maintenance = maintenanceResponse.data || [];
+      localStorage.setItem('maintenance_backup', JSON.stringify(maintenance));
+    }
+    
+    // تحميل الإحصائيات
+    const statsResponse = await callGoogleScript('getStats');
+    if (statsResponse.success) {
+      updateSystemStats(statsResponse.data);
+    }
+    
+    hideLoading();
+    showAlert(settingsAlert, 'تم تحميل البيانات بنجاح من الخادم!', 'success');
+    
+    // تحديث عرض البيانات
+    updateView();
+    
+    // تحديث قوائم اختيار العملاء
+    loadCustomersToSelect();
+    
+    // التحقق من البيانات المحلية
+    checkLocalData();
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error loading data:', error);
+    
+    // محاولة استخدام البيانات المحلية الاحتياطية
+    try {
+      customers = JSON.parse(localStorage.getItem('customers_backup')) || [];
+      orders = JSON.parse(localStorage.getItem('orders_backup')) || [];
+      maintenance = JSON.parse(localStorage.getItem('maintenance_backup')) || [];
+      
+      showAlert(settingsAlert, 'تم تحميل البيانات من النسخ الاحتياطي المحلي', 'warning');
+      updateView();
+      loadCustomersToSelect();
+      
+    } catch (backupError) {
+      showAlert(settingsAlert, 'فشل تحميل البيانات: ' + error.message, 'error');
+    }
+  }
+}
+
+// تحميل العملاء في قوائم الاختيار
+function loadCustomersToSelect() {
+  orderCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
+  maintenanceCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
+  
+  customers.forEach(customer => {
+    const option1 = document.createElement('option');
+    option1.value = customer.ID;
+    option1.textContent = `${customer.الاسم} - ${customer.الهاتف}`;
+    orderCustomerSelect.appendChild(option1);
+    
+    const option2 = document.createElement('option');
+    option2.value = customer.ID;
+    option2.textContent = `${customer.الاسم} - ${customer.الهاتف}`;
+    maintenanceCustomerSelect.appendChild(option2);
+  });
+}
+
+// إضافة عميل جديد
+async function addCustomer() {
+  const name = document.getElementById('customer-name').value.trim();
+  const phone = document.getElementById('customer-phone').value.trim();
+  const email = document.getElementById('customer-email').value.trim();
+  const address = document.getElementById('customer-address').value.trim();
+  const type = document.getElementById('customer-type').value;
+  const regDate = document.getElementById('customer-reg-date').value;
+  const notes = document.getElementById('customer-notes').value.trim();
+  
+  // التحقق من البيانات المطلوبة
+  if (!name || !phone) {
+    showAlert(customerAlert, 'يرجى ملء اسم العميل ورقم الهاتف', 'error');
+    return;
+  }
+  
+  showLoading('جاري حفظ العميل في الخادم...');
+  
+  try {
+    const params = {
+      name,
+      phone,
+      email,
+      address,
+      type,
+      regDate,
+      notes
+    };
+    
+    const response = await callGoogleScript('addCustomer', params);
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(customerAlert, response.message || 'تم إضافة العميل بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+      // مسح النموذج
+      clearCustomerForm();
+      
+    } else {
+      hideLoading();
+      showAlert(customerAlert, 'فشل إضافة العميل: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error adding customer:', error);
+    showAlert(customerAlert, 'فشل إضافة العميل: ' + error.message, 'error');
+  }
+}
+
+// إضافة طلب جديد
+async function addOrder() {
+  const customerId = orderCustomerSelect.value;
+  const date = document.getElementById('order-date').value;
+  const dueDate = document.getElementById('order-due-date').value;
+  const items = document.getElementById('order-items').value.trim();
+  const amount = document.getElementById('order-amount').value;
+  const status = document.getElementById('order-status').value;
+  const priority = document.getElementById('order-priority').value;
+  
+  // التحقق من البيانات المطلوبة
+  if (!customerId || !date || !items) {
+    showAlert(orderAlert, 'يرجى ملء بيانات العميل وتاريخ الطلب والمطلوب من المحل', 'error');
+    return;
+  }
+  
+  // البحث عن بيانات العميل
+  const customer = customers.find(c => c.ID === customerId);
+  if (!customer) {
+    showAlert(orderAlert, 'العميل غير موجود', 'error');
+    return;
+  }
+  
+  showLoading('جاري حفظ الطلب في الخادم...');
+  
+  try {
+    const params = {
+      customerId,
+      customerName: customer.الاسم,
+      customerPhone: customer.الهاتف,
+      date,
+      dueDate,
+      items,
+      amount,
+      status,
+      priority
+    };
+    
+    const response = await callGoogleScript('addOrder', params);
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(orderAlert, response.message || 'تم إضافة الطلب بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+      // مسح النموذج
+      clearOrderForm();
+      
+    } else {
+      hideLoading();
+      showAlert(orderAlert, 'فشل إضافة الطلب: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error adding order:', error);
+    showAlert(orderAlert, 'فشل إضافة الطلب: ' + error.message, 'error');
+  }
+}
+
+// إضافة جهاز للصيانة
+async function addMaintenance() {
+  const customerId = maintenanceCustomerSelect.value;
+  const date = document.getElementById('maintenance-date').value;
+  const expectedDate = document.getElementById('maintenance-expected-date').value;
+  const deviceType = document.getElementById('maintenance-device-type').value;
+  const deviceBrand = document.getElementById('maintenance-device-brand').value.trim();
+  const deviceModel = document.getElementById('maintenance-device-model').value.trim();
+  const problem = document.getElementById('maintenance-problem').value.trim();
+  const status = document.getElementById('maintenance-status').value;
+  const cost = document.getElementById('maintenance-cost').value;
+  const priority = document.getElementById('maintenance-priority').value;
+  const notes = document.getElementById('maintenance-notes').value.trim();
+  
+  // التحقق من البيانات المطلوبة
+  if (!customerId || !date || !deviceType || !problem) {
+    showAlert(maintenanceAlert, 'يرجى ملء بيانات العميل وتاريخ الاستلام ونوع الجهاز ووصف المشكلة', 'error');
+    return;
+  }
+  
+  // البحث عن بيانات العميل
+  const customer = customers.find(c => c.ID === customerId);
+  if (!customer) {
+    showAlert(maintenanceAlert, 'العميل غير موجود', 'error');
+    return;
+  }
+  
+  showLoading('جاري حفظ بيانات الصيانة في الخادم...');
+  
+  try {
+    const params = {
+      customerId,
+      customerName: customer.الاسم,
+      customerPhone: customer.الهاتف,
+      date,
+      expectedDate,
+      deviceType,
+      deviceBrand,
+      deviceModel,
+      problem,
+      status,
+      cost,
+      priority,
+      notes
+    };
+    
+    const response = await callGoogleScript('addMaintenance', params);
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(maintenanceAlert, response.message || 'تم استلام الجهاز للصيانة بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+      // مسح النموذج
+      clearMaintenanceForm();
+      
+    } else {
+      hideLoading();
+      showAlert(maintenanceAlert, 'فشل إضافة الصيانة: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error adding maintenance:', error);
+    showAlert(maintenanceAlert, 'فشل إضافة الصيانة: ' + error.message, 'error');
+  }
+}
+
+// مسح نماذج الإدخال
+function clearCustomerForm() {
+  document.getElementById('customer-name').value = '';
+  document.getElementById('customer-phone').value = '';
+  document.getElementById('customer-email').value = '';
+  document.getElementById('customer-address').value = '';
+  document.getElementById('customer-type').value = 'عادي';
+  document.getElementById('customer-notes').value = '';
+  document.getElementById('customer-reg-date').value = new Date().toISOString().split('T')[0];
+  customerAlert.style.display = 'none';
+}
+
+function clearOrderForm() {
+  document.getElementById('order-customer').value = '';
+  document.getElementById('order-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('order-due-date').value = '';
+  document.getElementById('order-items').value = '';
+  document.getElementById('order-amount').value = '';
+  document.getElementById('order-status').value = 'معلق';
+  document.getElementById('order-priority').value = 'عادية';
+  orderAlert.style.display = 'none';
+}
+
+function clearMaintenanceForm() {
+  document.getElementById('maintenance-customer').value = '';
+  document.getElementById('maintenance-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('maintenance-expected-date').value = '';
+  document.getElementById('maintenance-device-type').value = '';
+  document.getElementById('maintenance-device-brand').value = '';
+  document.getElementById('maintenance-device-model').value = '';
+  document.getElementById('maintenance-problem').value = '';
+  document.getElementById('maintenance-status').value = 'مستلم';
+  document.getElementById('maintenance-cost').value = '';
+  document.getElementById('maintenance-priority').value = 'عادية';
+  document.getElementById('maintenance-notes').value = '';
+  maintenanceAlert.style.display = 'none';
+}
+
+// تحديث عرض البيانات
+function updateView() {
+  const searchTerm = searchInput.value.toLowerCase();
+  
+  // تصفية البيانات بناءً على البحث
+  let filteredCustomers = customers;
+  let filteredOrders = orders;
+  let filteredMaintenance = maintenance;
+  
+  if (searchTerm) {
+    filteredCustomers = customers.filter(c => 
+      (c.الاسم && c.الاسم.toLowerCase().includes(searchTerm)) || 
+      (c.الهاتف && c.الهاتف.includes(searchTerm)) ||
+      (c.البريد && c.البريد.toLowerCase().includes(searchTerm)) ||
+      (c.العنوان && c.العنوان.toLowerCase().includes(searchTerm))
+    );
+    
+    filteredOrders = orders.filter(o => 
+      (o['اسم العميل'] && o['اسم العميل'].toLowerCase().includes(searchTerm)) || 
+      (o.المطلوب && o.المطلوب.toLowerCase().includes(searchTerm)) ||
+      (o.الحالة && o.الحالة.toLowerCase().includes(searchTerm))
+    );
+    
+    filteredMaintenance = maintenance.filter(m => 
+      (m['اسم العميل'] && m['اسم العميل'].toLowerCase().includes(searchTerm)) || 
+      (m['نوع الجهاز'] && m['نوع الجهاز'].toLowerCase().includes(searchTerm)) ||
+      (m.الماركة && m.الماركة.toLowerCase().includes(searchTerm)) ||
+      (m.الموديل && m.الموديل.toLowerCase().includes(searchTerm)) ||
+      (m.المشكلة && m.المشكلة.toLowerCase().includes(searchTerm)) ||
+      (m.الحالة && m.الحالة.toLowerCase().includes(searchTerm))
+    );
+  }
+  
+  // تحديث الإحصائيات
+  updateStats(filteredCustomers, filteredOrders, filteredMaintenance);
+  
+  // تحديث العرض
+  updateCustomersDisplay(filteredCustomers);
+  updateMaintenanceDisplay(filteredMaintenance);
+  updateOrdersDisplay(filteredOrders);
+}
+
+// تحديث الإحصائيات
+function updateStats(filteredCustomers, filteredOrders, filteredMaintenance) {
+  totalCustomersEl.textContent = filteredCustomers.length;
+  totalOrdersEl.textContent = filteredOrders.length;
+  totalMaintenanceEl.textContent = filteredMaintenance.length;
+  
+  const pendingMaintenance = filteredMaintenance.filter(m => 
+    m.الحالة && m.الحالة !== 'جاهز للتسليم' && m.الحالة !== 'مسلم'
+  ).length;
+  
+  pendingMaintenanceEl.textContent = pendingMaintenance;
+}
+
+// تحديث عرض العملاء
+function updateCustomersDisplay(filteredCustomers) {
+  if (filteredCustomers.length === 0) {
+    customersContainer.innerHTML = '';
+    noCustomers.style.display = 'block';
+    return;
+  }
+  
+  noCustomers.style.display = 'none';
+  
+  let customersHTML = '';
+  
+  filteredCustomers.forEach(customer => {
+    const customerOrders = orders.filter(o => o['معرف العميل'] === customer.ID);
+    const customerMaintenance = maintenance.filter(m => m['معرف العميل'] === customer.ID);
+    const typeClass = getCustomerTypeClass(customer.النوع);
+    
+    customersHTML += `
+      <div class="customer-card">
+        <div class="customer-header">
+          <div>
+            <div class="customer-name">${customer.الاسم || 'غير محدد'}</div>
+            <span class="customer-type ${typeClass}">${customer.النوع || 'عادي'}</span>
+          </div>
+        </div>
+        
+        <div class="customer-details">
+          <p><i class="fas fa-phone"></i> ${customer.الهاتف || 'غير محدد'}</p>
+          ${customer.البريد ? `<p><i class="fas fa-envelope"></i> ${customer.البريد}</p>` : ''}
+          ${customer.العنوان ? `<p><i class="fas fa-map-marker-alt"></i> ${customer.العنوان}</p>` : ''}
+          <p><i class="fas fa-calendar"></i> ${formatDate(customer['تاريخ التسجيل'])}</p>
+          ${customer.الملاحظات ? `<p><i class="fas fa-sticky-note"></i> ${truncateText(customer.الملاحظات, 50)}</p>` : ''}
+        </div>
+        
+        <div class="customer-stats">
+          <div class="customer-stat">${customerOrders.length} طلب</div>
+          <div class="customer-stat">${customerMaintenance.length} صيانة</div>
+        </div>
+        
+        <div class="customer-actions">
+          <button class="action-btn view" onclick="viewCustomerDetails('${customer.ID}')">
+            <i class="fas fa-eye"></i> عرض
+          </button>
+          <button class="action-btn delete" onclick="deleteCustomer('${customer.ID}')">
+            <i class="fas fa-trash"></i> حذف
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  customersContainer.innerHTML = customersHTML;
+  animateCards('.customer-card');
+}
+
+// حذف عميل
+async function deleteCustomer(customerId) {
+  if (!confirm('هل أنت متأكد من حذف هذا العميل؟ سيتم حذف جميع طلباته وأجهزة الصيانة المرتبطة به.')) {
+    return;
+  }
+  
+  showLoading('جاري حذف العميل من الخادم...');
+  
+  try {
+    const response = await callGoogleScript('deleteCustomer', { id: customerId });
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(settingsAlert, response.message || 'تم حذف العميل بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+    } else {
+      hideLoading();
+      showAlert(settingsAlert, 'فشل حذف العميل: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error deleting customer:', error);
+    showAlert(settingsAlert, 'فشل حذف العميل: ' + error.message, 'error');
+  }
+}
+
+// عرض تفاصيل العميل
+function viewCustomerDetails(customerId) {
+  const customer = customers.find(c => c.ID === customerId);
+  if (!customer) return;
+  
+  const customerOrders = orders.filter(o => o['معرف العميل'] === customerId);
+  const customerMaintenance = maintenance.filter(m => m['معرف العميل'] === customerId);
+  
+  let ordersList = '';
+  if (customerOrders.length > 0) {
+    ordersList = '<h4 style="margin-top: 20px; color: #764ba2;">طلبات العميل:</h4><ul style="text-align: right; margin-top: 10px;">';
+    customerOrders.forEach(order => {
+      ordersList += `<li style="margin-bottom: 8px;">${formatDate(order.التاريخ)}: ${truncateText(order.المطلوب, 60)} - ${order.الحالة}</li>`;
+    });
+    ordersList += '</ul>';
+  }
+  
+  let maintenanceList = '';
+  if (customerMaintenance.length > 0) {
+    maintenanceList = '<h4 style="margin-top: 20px; color: #FF9800;">أجهزة الصيانة:</h4><ul style="text-align: right; margin-top: 10px;">';
+    customerMaintenance.forEach(item => {
+      maintenanceList += `<li style="margin-bottom: 8px;">${formatDate(item['تاريخ الاستلام'])}: ${item['نوع الجهاز']} - ${item.الحالة}</li>`;
+    });
+    maintenanceList += '</ul>';
+  }
+  
+  let details = `
+    <div style="text-align: right; line-height: 1.8;">
+      <h3 style="color: #764ba2; margin-bottom: 15px;">${customer.الاسم || 'غير محدد'}</h3>
+      <p><strong>رقم الهاتف:</strong> ${customer.الهاتف || 'غير محدد'}</p>
+      ${customer.البريد ? `<p><strong>البريد الإلكتروني:</strong> ${customer.البريد}</p>` : ''}
+      ${customer.العنوان ? `<p><strong>العنوان:</strong> ${customer.العنوان}</p>` : ''}
+      <p><strong>نوع العميل:</strong> ${customer.النوع || 'عادي'}</p>
+      <p><strong>تاريخ التسجيل:</strong> ${formatDate(customer['تاريخ التسجيل'])}</p>
+      ${customer.الملاحظات ? `<p><strong>ملاحظات:</strong> ${customer.الملاحظات}</p>` : ''}
+      <p><strong>عدد الطلبات:</strong> ${customerOrders.length}</p>
+      <p><strong>عدد أجهزة الصيانة:</strong> ${customerMaintenance.length}</p>
+      ${ordersList}
+      ${maintenanceList}
+    </div>
+  `;
+  
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.zIndex = '1000';
+  
+  modal.innerHTML = `
+    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      ${details}
+      <div style="text-align: center; margin-top: 25px;">
+        <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 25px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 600;">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  modal.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.remove();
+    }
+  });
+}
+
+// تحديث عرض الصيانة
+function updateMaintenanceDisplay(filteredMaintenance) {
+  if (filteredMaintenance.length === 0) {
+    maintenanceContainer.innerHTML = '';
+    noMaintenance.style.display = 'block';
+    return;
+  }
+  
+  noMaintenance.style.display = 'none';
+  
+  let maintenanceHTML = '';
+  
+  filteredMaintenance.forEach(item => {
+    const statusClass = getMaintenanceStatusClass(item.الحالة);
+    const priorityClass = getPriorityClass(item.الأولوية);
+    
+    maintenanceHTML += `
+      <div class="maintenance-card">
+        <div class="maintenance-header">
+          <div class="maintenance-customer">${item['اسم العميل'] || 'غير محدد'}</div>
+          <div class="maintenance-date">${formatDate(item['تاريخ الاستلام'])}</div>
+        </div>
+        
+        <div class="maintenance-details">
+          <div class="maintenance-device">
+            <i class="fas fa-laptop"></i> ${item['نوع الجهاز'] || 'غير محدد'}
+            ${item.الماركة ? ` - ${item.الماركة}` : ''}
+            ${item.الموديل ? ` - ${item.الموديل}` : ''}
+          </div>
+          
+          <div class="maintenance-problem">
+            ${truncateText(item.المشكلة || '', 100)}
+          </div>
+          
+          ${item['تاريخ التسليم المتوقع'] ? `<p><strong>تاريخ التسليم المتوقع:</strong> ${formatDate(item['تاريخ التسليم المتوقع'])}</p>` : ''}
+          ${item.الملاحظات ? `<p><strong>ملاحظات:</strong> ${truncateText(item.الملاحظات, 50)}</p>` : ''}
+        </div>
+        
+        <div class="maintenance-actions">
+          <div>
+            <span class="maintenance-status ${statusClass}">${item.الحالة || 'مستلم'}</span>
+            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
+              <i class="fas fa-flag"></i> ${item.الأولوية || 'عادية'}
+            </span>
+          </div>
+          <div>
+            ${item.التكلفة > 0 ? `<span class="maintenance-cost">${item.التكلفة} ريال</span>` : ''}
+          </div>
+        </div>
+        
+        <div class="customer-actions" style="margin-top: 15px;">
+          <button class="action-btn delete" onclick="deleteMaintenance('${item.ID}')">
+            <i class="fas fa-trash"></i> حذف
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  maintenanceContainer.innerHTML = maintenanceHTML;
+  animateCards('.maintenance-card');
+}
+
+// حذف صيانة
+async function deleteMaintenance(maintenanceId) {
+  if (!confirm('هل أنت متأكد من حذف بيانات الصيانة هذه؟')) {
+    return;
+  }
+  
+  showLoading('جاري حذف بيانات الصيانة من الخادم...');
+  
+  try {
+    const response = await callGoogleScript('deleteMaintenance', { id: maintenanceId });
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(settingsAlert, response.message || 'تم حذف بيانات الصيانة بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+    } else {
+      hideLoading();
+      showAlert(settingsAlert, 'فشل حذف الصيانة: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error deleting maintenance:', error);
+    showAlert(settingsAlert, 'فشل حذف الصيانة: ' + error.message, 'error');
+  }
+}
+
+// تحديث عرض الطلبات
+function updateOrdersDisplay(filteredOrders) {
+  if (filteredOrders.length === 0) {
+    ordersContainer.innerHTML = '';
+    noOrders.style.display = 'block';
+    return;
+  }
+  
+  noOrders.style.display = 'none';
+  
+  let ordersHTML = '';
+  
+  filteredOrders.forEach(order => {
+    const statusClass = getStatusClass(order.الحالة);
+    const priorityClass = getPriorityClass(order.الأولوية);
+    
+    ordersHTML += `
+      <div class="order-card">
+        <div class="order-header">
+          <div class="order-customer">${order['اسم العميل'] || 'غير محدد'}</div>
+          <div class="order-date">${formatDate(order.التاريخ)}</div>
+        </div>
+        
+        <div class="order-details">
+          <p><strong>المطلوب:</strong> ${truncateText(order.المطلوب || '', 100)}</p>
+          <p><strong>رقم الهاتف:</strong> ${order['هاتف العميل'] || 'غير محدد'}</p>
+          ${order.المبلغ > 0 ? `<p><strong>المبلغ:</strong> ${order.المبلغ} ريال</p>` : ''}
+          ${order['تاريخ التسليم'] ? `<p><strong>تاريخ التسليم:</strong> ${formatDate(order['تاريخ التسليم'])}</p>` : ''}
+        </div>
+        
+        <div class="order-actions">
+          <div>
+            <span class="order-status ${statusClass}">${order.الحالة || 'معلق'}</span>
+            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
+              <i class="fas fa-flag"></i> ${order.الأولوية || 'عادية'}
+            </span>
+          </div>
+          <button class="action-btn delete" onclick="deleteOrder('${order.ID}')">
+            <i class="fas fa-trash"></i> حذف
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  ordersContainer.innerHTML = ordersHTML;
+  animateCards('.order-card');
+}
+
+// حذف طلب
+async function deleteOrder(orderId) {
+  if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+    return;
+  }
+  
+  showLoading('جاري حذف الطلب من الخادم...');
+  
+  try {
+    const response = await callGoogleScript('deleteOrder', { id: orderId });
+    
+    if (response.success) {
+      hideLoading();
+      showAlert(settingsAlert, response.message || 'تم حذف الطلب بنجاح!', 'success');
+      
+      // تحديث البيانات المحلية
+      await loadAllData();
+      
+    } else {
+      hideLoading();
+      showAlert(settingsAlert, 'فشل حذف الطلب: ' + (response.error || 'خطأ غير معروف'), 'error');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    console.error('Error deleting order:', error);
+    showAlert(settingsAlert, 'فشل حذف الطلب: ' + error.message, 'error');
+  }
+}
+
+// تصدير البيانات إلى Excel
+function exportToExcel() {
+  showLoading('جاري تحضير البيانات للتصدير...');
+  
+  setTimeout(() => {
+    // إنشاء بيانات CSV
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    
+    // تصدير العملاء
+    csvContent += "=== العملاء ===\n";
+    csvContent += "ID,الاسم,الهاتف,البريد,العنوان,النوع,تاريخ التسجيل,الملاحظات,تاريخ الإضافة\n";
+    customers.forEach(customer => {
+      csvContent += `"${customer.ID}","${customer.الاسم}","${customer.الهاتف}","${customer.البريد}","${customer.العنوان}","${customer.النوع}","${customer['تاريخ التسجيل']}","${customer.الملاحظات}","${customer['تاريخ الإضافة']}"\n`;
+    });
+    
+    csvContent += "\n=== الطلبات ===\n";
+    csvContent += "ID,معرف العميل,اسم العميل,هاتف العميل,التاريخ,تاريخ التسليم,المطلوب,المبلغ,الحالة,الأولوية,تاريخ الإضافة\n";
+    orders.forEach(order => {
+      csvContent += `"${order.ID}","${order['معرف العميل']}","${order['اسم العميل']}","${order['هاتف العميل']}","${order.التاريخ}","${order['تاريخ التسليم']}","${order.المطلوب}","${order.المبلغ}","${order.الحالة}","${order.الأولوية}","${order['تاريخ الإضافة']}"\n`;
+    });
+    
+    csvContent += "\n=== الصيانة ===\n";
+    csvContent += "ID,معرف العميل,اسم العميل,هاتف العميل,تاريخ الاستلام,تاريخ التسليم المتوقع,نوع الجهاز,الماركة,الموديل,المشكلة,الحالة,التكلفة,الأولوية,الملاحظات,تاريخ الإضافة\n";
+    maintenance.forEach(item => {
+      csvContent += `"${item.ID}","${item['معرف العميل']}","${item['اسم العميل']}","${item['هاتف العميل']}","${item['تاريخ الاستلام']}","${item['تاريخ التسليم المتوقع']}","${item['نوع الجهاز']}","${item.الماركة}","${item.الموديل}","${item.المشكلة}","${item.الحالة}","${item.التكلفة}","${item.الأولوية}","${item.الملاحظات}","${item['تاريخ الإضافة']}"\n`;
+    });
+    
+    // إنشاء رابط التحميل
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `بيانات_النظام_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    
+    hideLoading();
+    link.click();
+    document.body.removeChild(link);
+    
+    showAlert(settingsAlert, 'تم تصدير البيانات بنجاح!', 'success');
+  }, 1000);
+}
+
+// حذف جميع البيانات المحلية
+function clearAllData() {
+  if (!confirm('هل أنت متأكد من حذف جميع البيانات المحلية؟ هذا لا يؤثر على البيانات في جوجل شيت.')) {
+    return;
+  }
+  
+  localStorage.removeItem('customers_backup');
+  localStorage.removeItem('orders_backup');
+  localStorage.removeItem('maintenance_backup');
+  
+  customers = [];
+  orders = [];
+  maintenance = [];
+  
+  updateView();
+  showAlert(settingsAlert, 'تم حذف جميع البيانات المحلية بنجاح', 'success');
+  clearDataBtn.style.display = 'none';
+}
+
+// التحقق من وجود بيانات محلية
+function checkLocalData() {
+  const hasLocalData = 
+    localStorage.getItem('customers_backup') || 
+    localStorage.getItem('orders_backup') || 
+    localStorage.getItem('maintenance_backup');
+  
+  if (hasLocalData) {
+    clearDataBtn.style.display = 'inline-block';
+  } else {
+    clearDataBtn.style.display = 'none';
+  }
+}
 
 // تهيئة نظام التبويبات
 function initTabs() {
@@ -1214,498 +2324,51 @@ function initTabs() {
   });
 }
 
-// تحميل العملاء في قوائم الاختيار
-function loadCustomersToSelect() {
-  orderCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
-  maintenanceCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
-  
-  customers.forEach(customer => {
-    const option1 = document.createElement('option');
-    option1.value = customer.id;
-    option1.textContent = `${customer.name} - ${customer.phone}`;
-    orderCustomerSelect.appendChild(option1);
-    
-    const option2 = document.createElement('option');
-    option2.value = customer.id;
-    option2.textContent = `${customer.name} - ${customer.phone}`;
-    maintenanceCustomerSelect.appendChild(option2);
-  });
+// وظائف مساعدة
+function showLoading(message) {
+  loadingMessage.textContent = message;
+  loadingOverlay.style.display = 'flex';
 }
 
-// إضافة عميل جديد
-function addCustomer() {
-  const name = document.getElementById('customer-name').value.trim();
-  const phone = document.getElementById('customer-phone').value.trim();
-  const email = document.getElementById('customer-email').value.trim();
-  const address = document.getElementById('customer-address').value.trim();
-  const type = document.getElementById('customer-type').value;
-  const regDate = document.getElementById('customer-reg-date').value;
-  const notes = document.getElementById('customer-notes').value.trim();
-  
-  // التحقق من البيانات المطلوبة
-  if (!name || !phone) {
-    showAlert(customerAlert, 'يرجى ملء اسم العميل ورقم الهاتف', 'error');
-    return;
-  }
-  
-  // التحقق من عدم تكرار رقم الهاتف
-  if (customers.some(c => c.phone === phone)) {
-    showAlert(customerAlert, 'رقم الهاتف مسجل مسبقاً', 'error');
-    return;
-  }
-  
-  // إنشاء كائن العميل
-  const customer = {
-    id: Date.now().toString(),
-    name,
-    phone,
-    email,
-    address,
-    type,
-    regDate: regDate || new Date().toISOString().split('T')[0],
-    notes,
-    createdAt: new Date().toISOString()
-  };
-  
-  // إضافة العميل إلى القائمة
-  customers.push(customer);
-  
-  // حفظ في localStorage
-  localStorage.setItem('customers', JSON.stringify(customers));
-  
-  // إظهار رسالة النجاح
-  showAlert(customerAlert, 'تم إضافة العميل بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  loadCustomersToSelect();
-  updateView();
-  
-  // مسح النموذج بعد تأخير بسيط
-  setTimeout(clearCustomerForm, 1500);
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
 }
 
-// إضافة طلب جديد
-function addOrder() {
-  const customerId = orderCustomerSelect.value;
-  const date = document.getElementById('order-date').value;
-  const dueDate = document.getElementById('order-due-date').value;
-  const items = document.getElementById('order-items').value.trim();
-  const amount = document.getElementById('order-amount').value;
-  const status = document.getElementById('order-status').value;
-  const priority = document.getElementById('order-priority').value;
+function showAlert(alertElement, message, type) {
+  alertElement.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+    ${message}
+  `;
   
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !items) {
-    showAlert(orderAlert, 'يرجى ملء بيانات العميل وتاريخ الطلب والمطلوب من المحل', 'error');
-    return;
-  }
+  alertElement.className = `alert alert-${type}`;
+  alertElement.style.display = 'flex';
   
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) {
-    showAlert(orderAlert, 'العميل غير موجود', 'error');
-    return;
-  }
-  
-  // إنشاء كائن الطلب
-  const order = {
-    id: Date.now().toString(),
-    customerId,
-    customerName: customer.name,
-    customerPhone: customer.phone,
-    date,
-    dueDate,
-    items,
-    amount: amount || 0,
-    status,
-    priority,
-    createdAt: new Date().toISOString()
-  };
-  
-  // إضافة الطلب إلى القائمة
-  orders.push(order);
-  
-  // حفظ في localStorage
-  localStorage.setItem('orders', JSON.stringify(orders));
-  
-  // إظهار رسالة النجاح
-  showAlert(orderAlert, 'تم إضافة الطلب بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  updateView();
-  
-  // مسح النموذج بعد تأخير بسيط
-  setTimeout(clearOrderForm, 1500);
+  setTimeout(() => {
+    alertElement.style.display = 'none';
+  }, 5000);
 }
 
-// إضافة جهاز للصيانة
-function addMaintenance() {
-  const customerId = maintenanceCustomerSelect.value;
-  const date = document.getElementById('maintenance-date').value;
-  const expectedDate = document.getElementById('maintenance-expected-date').value;
-  const deviceType = document.getElementById('maintenance-device-type').value;
-  const deviceBrand = document.getElementById('maintenance-device-brand').value.trim();
-  const deviceModel = document.getElementById('maintenance-device-model').value.trim();
-  const problem = document.getElementById('maintenance-problem').value.trim();
-  const status = document.getElementById('maintenance-status').value;
-  const cost = document.getElementById('maintenance-cost').value;
-  const priority = document.getElementById('maintenance-priority').value;
-  const notes = document.getElementById('maintenance-notes').value.trim();
+function formatDate(dateString) {
+  if (!dateString) return 'غير محدد';
   
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !deviceType || !problem) {
-    showAlert(maintenanceAlert, 'يرجى ملء بيانات العميل وتاريخ الاستلام ونوع الجهاز ووصف المشكلة', 'error');
-    return;
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (error) {
+    return dateString;
   }
-  
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) {
-    showAlert(maintenanceAlert, 'العميل غير موجود', 'error');
-    return;
-  }
-  
-  // إنشاء كائن الصيانة
-  const maintenanceItem = {
-    id: Date.now().toString(),
-    customerId,
-    customerName: customer.name,
-    customerPhone: customer.phone,
-    date,
-    expectedDate,
-    deviceType,
-    deviceBrand,
-    deviceModel,
-    problem,
-    status,
-    cost: cost || 0,
-    priority,
-    notes,
-    createdAt: new Date().toISOString()
-  };
-  
-  // إضافة الصيانة إلى القائمة
-  maintenance.push(maintenanceItem);
-  
-  // حفظ في localStorage
-  localStorage.setItem('maintenance', JSON.stringify(maintenance));
-  
-  // إظهار رسالة النجاح
-  showAlert(maintenanceAlert, 'تم استلام الجهاز للصيانة بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  updateView();
-  
-  // مسح النموذج بعد تأخير بسيط
-  setTimeout(clearMaintenanceForm, 1500);
 }
 
-// مسح نموذج إضافة العميل
-function clearCustomerForm() {
-  document.getElementById('customer-name').value = '';
-  document.getElementById('customer-phone').value = '';
-  document.getElementById('customer-email').value = '';
-  document.getElementById('customer-address').value = '';
-  document.getElementById('customer-type').value = 'عادي';
-  document.getElementById('customer-notes').value = '';
-  document.getElementById('customer-reg-date').value = new Date().toISOString().split('T')[0];
-  
-  // إخفاء أي رسالة تنبيه
-  customerAlert.style.display = 'none';
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
 
-// مسح نموذج إضافة الطلب
-function clearOrderForm() {
-  document.getElementById('order-customer').value = '';
-  document.getElementById('order-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('order-due-date').value = '';
-  document.getElementById('order-items').value = '';
-  document.getElementById('order-amount').value = '';
-  document.getElementById('order-status').value = 'معلق';
-  document.getElementById('order-priority').value = 'عادية';
-  
-  // إخفاء أي رسالة تنبيه
-  orderAlert.style.display = 'none';
-}
-
-// مسح نموذج استلام الصيانة
-function clearMaintenanceForm() {
-  document.getElementById('maintenance-customer').value = '';
-  document.getElementById('maintenance-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('maintenance-expected-date').value = '';
-  document.getElementById('maintenance-device-type').value = '';
-  document.getElementById('maintenance-device-brand').value = '';
-  document.getElementById('maintenance-device-model').value = '';
-  document.getElementById('maintenance-problem').value = '';
-  document.getElementById('maintenance-status').value = 'مستلم';
-  document.getElementById('maintenance-cost').value = '';
-  document.getElementById('maintenance-priority').value = 'عادية';
-  document.getElementById('maintenance-notes').value = '';
-  
-  // إخفاء أي رسالة تنبيه
-  maintenanceAlert.style.display = 'none';
-}
-
-// تحديث عرض البيانات في تبويب العرض
-function updateView() {
-  const searchTerm = searchInput.value.toLowerCase();
-  
-  // تصفية العملاء بناءً على البحث
-  let filteredCustomers = customers;
-  if (searchTerm) {
-    filteredCustomers = customers.filter(c => 
-      c.name.toLowerCase().includes(searchTerm) || 
-      c.phone.includes(searchTerm) ||
-      (c.email && c.email.toLowerCase().includes(searchTerm)) ||
-      (c.address && c.address.toLowerCase().includes(searchTerm))
-    );
-  }
-  
-  // تصفية الطلبات بناءً على البحث
-  let filteredOrders = orders;
-  if (searchTerm) {
-    filteredOrders = orders.filter(o => 
-      o.customerName.toLowerCase().includes(searchTerm) || 
-      o.items.toLowerCase().includes(searchTerm) ||
-      o.status.toLowerCase().includes(searchTerm)
-    );
-  }
-  
-  // تصفية الصيانة بناءً على البحث
-  let filteredMaintenance = maintenance;
-  if (searchTerm) {
-    filteredMaintenance = maintenance.filter(m => 
-      m.customerName.toLowerCase().includes(searchTerm) || 
-      m.deviceType.toLowerCase().includes(searchTerm) ||
-      m.deviceBrand.toLowerCase().includes(searchTerm) ||
-      m.deviceModel.toLowerCase().includes(searchTerm) ||
-      m.problem.toLowerCase().includes(searchTerm) ||
-      m.status.toLowerCase().includes(searchTerm)
-    );
-  }
-  
-  // تحديث إحصائيات الصفحة
-  updateStats(filteredCustomers, filteredOrders, filteredMaintenance);
-  
-  // تحديث عرض العملاء كبطاقات
-  updateCustomersDisplay(filteredCustomers);
-  
-  // تحديث عرض الصيانة كبطاقات
-  updateMaintenanceDisplay(filteredMaintenance);
-  
-  // تحديث عرض الطلبات كبطاقات
-  updateOrdersDisplay(filteredOrders);
-}
-
-// تحديث الإحصائيات
-function updateStats(filteredCustomers, filteredOrders, filteredMaintenance) {
-  totalCustomersEl.textContent = filteredCustomers.length;
-  totalOrdersEl.textContent = filteredOrders.length;
-  totalMaintenanceEl.textContent = filteredMaintenance.length;
-  
-  const pendingMaintenance = filteredMaintenance.filter(m => 
-    m.status !== 'جاهز للتسليم' && m.status !== 'مسلم'
-  ).length;
-  
-  pendingMaintenanceEl.textContent = pendingMaintenance;
-}
-
-// تحديث عرض العملاء كبطاقات
-function updateCustomersDisplay(filteredCustomers) {
-  if (filteredCustomers.length === 0) {
-    customersContainer.innerHTML = '';
-    noCustomers.style.display = 'block';
-    return;
-  }
-  
-  noCustomers.style.display = 'none';
-  
-  // ترتيب العملاء من الأحدث إلى الأقدم
-  const sortedCustomers = [...filteredCustomers].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-  let customersHTML = '';
-  
-  sortedCustomers.forEach(customer => {
-    // حساب عدد الطلبات لهذا العميل
-    const customerOrders = orders.filter(o => o.customerId === customer.id);
-    const customerMaintenance = maintenance.filter(m => m.customerId === customer.id);
-    
-    // تحديد لون النوع
-    const typeClass = getCustomerTypeClass(customer.type);
-    
-    customersHTML += `
-      <div class="customer-card">
-        <div class="customer-header">
-          <div>
-            <div class="customer-name">${customer.name}</div>
-            <span class="customer-type ${typeClass}">${customer.type}</span>
-          </div>
-        </div>
-        
-        <div class="customer-details">
-          <p><i class="fas fa-phone"></i> ${customer.phone}</p>
-          ${customer.email ? `<p><i class="fas fa-envelope"></i> ${customer.email}</p>` : ''}
-          ${customer.address ? `<p><i class="fas fa-map-marker-alt"></i> ${customer.address}</p>` : ''}
-          <p><i class="fas fa-calendar"></i> ${formatDate(customer.regDate)}</p>
-          ${customer.notes ? `<p><i class="fas fa-sticky-note"></i> ${truncateText(customer.notes, 50)}</p>` : ''}
-        </div>
-        
-        <div class="customer-stats">
-          <div class="customer-stat">${customerOrders.length} طلب</div>
-          <div class="customer-stat">${customerMaintenance.length} صيانة</div>
-        </div>
-        
-        <div class="customer-actions">
-          <button class="action-btn view" onclick="viewCustomerDetails('${customer.id}')">
-            <i class="fas fa-eye"></i> عرض
-          </button>
-          <button class="action-btn edit" onclick="editCustomer('${customer.id}')">
-            <i class="fas fa-edit"></i> تعديل
-          </button>
-          <button class="action-btn delete" onclick="deleteCustomer('${customer.id}')">
-            <i class="fas fa-trash"></i> حذف
-          </button>
-        </div>
-      </div>
-    `;
-  });
-  
-  customersContainer.innerHTML = customersHTML;
-  
-  // إضافة تأثير ظهور تدريجي للبطاقات
-  animateCards('.customer-card');
-}
-
-// تحديث عرض الصيانة كبطاقات
-function updateMaintenanceDisplay(filteredMaintenance) {
-  if (filteredMaintenance.length === 0) {
-    maintenanceContainer.innerHTML = '';
-    noMaintenance.style.display = 'block';
-    return;
-  }
-  
-  noMaintenance.style.display = 'none';
-  
-  // ترتيب الصيانة من الأحدث إلى الأقدم
-  const sortedMaintenance = [...filteredMaintenance].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-  let maintenanceHTML = '';
-  
-  sortedMaintenance.forEach(item => {
-    const statusClass = getMaintenanceStatusClass(item.status);
-    const priorityClass = getPriorityClass(item.priority);
-    
-    maintenanceHTML += `
-      <div class="maintenance-card">
-        <div class="maintenance-header">
-          <div class="maintenance-customer">${item.customerName}</div>
-          <div class="maintenance-date">${formatDate(item.date)}</div>
-        </div>
-        
-        <div class="maintenance-details">
-          <div class="maintenance-device">
-            <i class="fas fa-laptop"></i> ${item.deviceType}
-            ${item.deviceBrand ? ` - ${item.deviceBrand}` : ''}
-            ${item.deviceModel ? ` - ${item.deviceModel}` : ''}
-          </div>
-          
-          <div class="maintenance-problem">
-            ${truncateText(item.problem, 100)}
-          </div>
-          
-          ${item.expectedDate ? `<p><strong>تاريخ التسليم المتوقع:</strong> ${formatDate(item.expectedDate)}</p>` : ''}
-          ${item.notes ? `<p><strong>ملاحظات:</strong> ${truncateText(item.notes, 50)}</p>` : ''}
-        </div>
-        
-        <div class="maintenance-actions">
-          <div>
-            <span class="maintenance-status ${statusClass}">${item.status}</span>
-            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
-              <i class="fas fa-flag"></i> ${item.priority}
-            </span>
-          </div>
-          <div>
-            ${item.cost > 0 ? `<span class="maintenance-cost">${item.cost} ريال</span>` : ''}
-          </div>
-        </div>
-        
-        <div class="customer-actions" style="margin-top: 15px;">
-          <button class="action-btn update" onclick="updateMaintenanceStatus('${item.id}')">
-            <i class="fas fa-sync-alt"></i> تحديث الحالة
-          </button>
-          <button class="action-btn edit" onclick="editMaintenance('${item.id}')">
-            <i class="fas fa-edit"></i> تعديل
-          </button>
-          <button class="action-btn delete" onclick="deleteMaintenance('${item.id}')">
-            <i class="fas fa-trash"></i> حذف
-          </button>
-        </div>
-      </div>
-    `;
-  });
-  
-  maintenanceContainer.innerHTML = maintenanceHTML;
-  
-  // إضافة تأثير ظهور تدريجي للبطاقات
-  animateCards('.maintenance-card');
-}
-
-// تحديث عرض الطلبات كبطاقات
-function updateOrdersDisplay(filteredOrders) {
-  if (filteredOrders.length === 0) {
-    ordersContainer.innerHTML = '';
-    noOrders.style.display = 'block';
-    return;
-  }
-  
-  noOrders.style.display = 'none';
-  
-  // ترتيب الطلبات من الأحدث إلى الأقدم
-  const sortedOrders = [...filteredOrders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-  let ordersHTML = '';
-  
-  sortedOrders.forEach(order => {
-    const customer = customers.find(c => c.id === order.customerId);
-    const statusClass = getStatusClass(order.status);
-    const priorityClass = getPriorityClass(order.priority);
-    
-    ordersHTML += `
-      <div class="order-card">
-        <div class="order-header">
-          <div class="order-customer">${order.customerName}</div>
-          <div class="order-date">${formatDate(order.date)}</div>
-        </div>
-        
-        <div class="order-details">
-          <p><strong>المطلوب:</strong> ${truncateText(order.items, 100)}</p>
-          <p><strong>رقم الهاتف:</strong> ${order.customerPhone}</p>
-          ${order.amount > 0 ? `<p><strong>المبلغ:</strong> ${order.amount} ريال</p>` : ''}
-          ${order.dueDate ? `<p><strong>تاريخ التسليم:</strong> ${formatDate(order.dueDate)}</p>` : ''}
-        </div>
-        
-        <div class="order-actions">
-          <div>
-            <span class="order-status ${statusClass}">${order.status}</span>
-            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
-              <i class="fas fa-flag"></i> ${order.priority}
-            </span>
-          </div>
-          <button class="action-btn edit" onclick="editOrder('${order.id}')">
-            <i class="fas fa-edit"></i> تعديل
-          </button>
-        </div>
-      </div>
-    `;
-  });
-  
-  ordersContainer.innerHTML = ordersHTML;
-  
-  // إضافة تأثير ظهور تدريجي للبطاقات
-  animateCards('.order-card');
-}
-
-// تأثير ظهور تدريجي للبطاقات
 function animateCards(selector) {
   const cards = document.querySelectorAll(selector);
   cards.forEach((card, index) => {
@@ -1718,458 +2381,6 @@ function animateCards(selector) {
       card.style.transform = 'translateY(0)';
     }, index * 100);
   });
-}
-
-// عرض تفاصيل العميل
-function viewCustomerDetails(customerId) {
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) return;
-  
-  const customerOrders = orders.filter(o => o.customerId === customerId);
-  const customerMaintenance = maintenance.filter(m => m.customerId === customerId);
-  
-  let ordersList = '';
-  if (customerOrders.length > 0) {
-    ordersList = '<h4 style="margin-top: 20px; color: #764ba2;">طلبات العميل:</h4><ul style="text-align: right; margin-top: 10px;">';
-    customerOrders.forEach(order => {
-      ordersList += `<li style="margin-bottom: 8px;">${formatDate(order.date)}: ${truncateText(order.items, 60)} - ${order.status}</li>`;
-    });
-    ordersList += '</ul>';
-  }
-  
-  let maintenanceList = '';
-  if (customerMaintenance.length > 0) {
-    maintenanceList = '<h4 style="margin-top: 20px; color: #FF9800;">أجهزة الصيانة:</h4><ul style="text-align: right; margin-top: 10px;">';
-    customerMaintenance.forEach(item => {
-      maintenanceList += `<li style="margin-bottom: 8px;">${formatDate(item.date)}: ${item.deviceType} - ${item.status}</li>`;
-    });
-    maintenanceList += '</ul>';
-  }
-  
-  let details = `
-    <div style="text-align: right; line-height: 1.8;">
-      <h3 style="color: #764ba2; margin-bottom: 15px;">${customer.name}</h3>
-      <p><strong>رقم الهاتف:</strong> ${customer.phone}</p>
-      ${customer.email ? `<p><strong>البريد الإلكتروني:</strong> ${customer.email}</p>` : ''}
-      ${customer.address ? `<p><strong>العنوان:</strong> ${customer.address}</p>` : ''}
-      <p><strong>نوع العميل:</strong> ${customer.type}</p>
-      <p><strong>تاريخ التسجيل:</strong> ${formatDate(customer.regDate)}</p>
-      ${customer.notes ? `<p><strong>ملاحظات:</strong> ${customer.notes}</p>` : ''}
-      <p><strong>عدد الطلبات:</strong> ${customerOrders.length}</p>
-      <p><strong>عدد أجهزة الصيانة:</strong> ${customerMaintenance.length}</p>
-      ${ordersList}
-      ${maintenanceList}
-    </div>
-  `;
-  
-  // إنشاء نافذة عرض مخصصة
-  const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100%';
-  modal.style.height = '100%';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.zIndex = '1000';
-  
-  modal.innerHTML = `
-    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-      ${details}
-      <div style="text-align: center; margin-top: 25px;">
-        <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 25px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 600;">
-          إغلاق
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  
-  // إغلاق النافذة عند النقر خارجها
-  modal.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.remove();
-    }
-  });
-}
-
-// تحديث حالة الصيانة
-function updateMaintenanceStatus(maintenanceId) {
-  const maintenanceIndex = maintenance.findIndex(m => m.id === maintenanceId);
-  if (maintenanceIndex === -1) return;
-  
-  const currentItem = maintenance[maintenanceIndex];
-  const statuses = ['مستلم', 'قيد التشخيص', 'قيد الإصلاح', 'جاهز للتسليم', 'مسلم'];
-  const currentIndex = statuses.indexOf(currentItem.status);
-  const nextIndex = currentIndex < statuses.length - 1 ? currentIndex + 1 : currentIndex;
-  
-  const newStatus = statuses[nextIndex];
-  
-  if (confirm(`هل تريد تغيير حالة الصيانة من "${currentItem.status}" إلى "${newStatus}"؟`)) {
-    maintenance[maintenanceIndex].status = newStatus;
-    maintenance[maintenanceIndex].updatedAt = new Date().toISOString();
-    
-    // حفظ في localStorage
-    localStorage.setItem('maintenance', JSON.stringify(maintenance));
-    
-    // تحديث العرض
-    updateView();
-    
-    // إظهار رسالة نجاح
-    showAlert(maintenanceAlert, `تم تحديث حالة الصيانة إلى "${newStatus}" بنجاح!`, 'success');
-  }
-}
-
-// تعديل بيانات العميل
-function editCustomer(customerId) {
-  // الانتقال إلى تبويب إضافة عميل جديد
-  document.querySelector('[data-tab="customers-tab"]').click();
-  
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) return;
-  
-  // ملء النموذج ببيانات العميل
-  document.getElementById('customer-name').value = customer.name;
-  document.getElementById('customer-phone').value = customer.phone;
-  document.getElementById('customer-email').value = customer.email || '';
-  document.getElementById('customer-address').value = customer.address || '';
-  document.getElementById('customer-type').value = customer.type;
-  document.getElementById('customer-reg-date').value = customer.regDate;
-  document.getElementById('customer-notes').value = customer.notes || '';
-  
-  // تغيير نص زر الحفظ
-  const saveBtn = document.querySelector('#customers-tab .btn-primary');
-  saveBtn.innerHTML = '<i class="fas fa-save"></i> تحديث العميل';
-  saveBtn.onclick = function() { updateCustomer(customerId); };
-  
-  // إظهار رسالة
-  showAlert(customerAlert, 'يمكنك تعديل بيانات العميل الآن', 'info');
-}
-
-// تحديث بيانات العميل
-function updateCustomer(customerId) {
-  const customerIndex = customers.findIndex(c => c.id === customerId);
-  if (customerIndex === -1) return;
-  
-  const name = document.getElementById('customer-name').value.trim();
-  const phone = document.getElementById('customer-phone').value.trim();
-  const email = document.getElementById('customer-email').value.trim();
-  const address = document.getElementById('customer-address').value.trim();
-  const type = document.getElementById('customer-type').value;
-  const regDate = document.getElementById('customer-reg-date').value;
-  const notes = document.getElementById('customer-notes').value.trim();
-  
-  // التحقق من البيانات المطلوبة
-  if (!name || !phone) {
-    showAlert(customerAlert, 'يرجى ملء اسم العميل ورقم الهاتف', 'error');
-    return;
-  }
-  
-  // تحديث بيانات العميل
-  customers[customerIndex] = {
-    ...customers[customerIndex],
-    name,
-    phone,
-    email,
-    address,
-    type,
-    regDate: regDate || customers[customerIndex].regDate,
-    notes,
-    updatedAt: new Date().toISOString()
-  };
-  
-  // حفظ في localStorage
-  localStorage.setItem('customers', JSON.stringify(customers));
-  
-  // إظهار رسالة النجاح
-  showAlert(customerAlert, 'تم تحديث بيانات العميل بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  loadCustomersToSelect();
-  updateView();
-  
-  // إعادة تعيين الزر
-  setTimeout(() => {
-    const saveBtn = document.querySelector('#customers-tab .btn-primary');
-    saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ العميل';
-    saveBtn.onclick = addCustomer;
-    
-    clearCustomerForm();
-  }, 1500);
-}
-
-// حذف عميل
-function deleteCustomer(customerId) {
-  if (!confirm('هل أنت متأكد من حذف هذا العميل؟ سيتم حذف جميع طلباته وأجهزة الصيانة الخاصة به أيضاً.')) {
-    return;
-  }
-  
-  // حذف العميل
-  customers = customers.filter(c => c.id !== customerId);
-  
-  // حذف طلبات العميل
-  orders = orders.filter(o => o.customerId !== customerId);
-  
-  // حذف صيانة العميل
-  maintenance = maintenance.filter(m => m.customerId !== customerId);
-  
-  // حفظ التغييرات
-  localStorage.setItem('customers', JSON.stringify(customers));
-  localStorage.setItem('orders', JSON.stringify(orders));
-  localStorage.setItem('maintenance', JSON.stringify(maintenance));
-  
-  // تحديث عرض البيانات
-  loadCustomersToSelect();
-  updateView();
-  
-  // إظهار رسالة
-  showAlert(customerAlert, 'تم حذف العميل وبياناته بنجاح', 'success');
-}
-
-// تعديل بيانات الصيانة
-function editMaintenance(maintenanceId) {
-  // الانتقال إلى تبويب الصيانة
-  document.querySelector('[data-tab="maintenance-tab"]').click();
-  
-  // البحث عن الصيانة
-  const maintenanceItem = maintenance.find(m => m.id === maintenanceId);
-  if (!maintenanceItem) return;
-  
-  // ملء النموذج ببيانات الصيانة
-  document.getElementById('maintenance-customer').value = maintenanceItem.customerId;
-  document.getElementById('maintenance-date').value = maintenanceItem.date;
-  document.getElementById('maintenance-expected-date').value = maintenanceItem.expectedDate || '';
-  document.getElementById('maintenance-device-type').value = maintenanceItem.deviceType;
-  document.getElementById('maintenance-device-brand').value = maintenanceItem.deviceBrand || '';
-  document.getElementById('maintenance-device-model').value = maintenanceItem.deviceModel || '';
-  document.getElementById('maintenance-problem').value = maintenanceItem.problem;
-  document.getElementById('maintenance-status').value = maintenanceItem.status;
-  document.getElementById('maintenance-cost').value = maintenanceItem.cost || '';
-  document.getElementById('maintenance-priority').value = maintenanceItem.priority;
-  document.getElementById('maintenance-notes').value = maintenanceItem.notes || '';
-  
-  // تغيير نص زر الإضافة
-  const addBtn = document.querySelector('#maintenance-tab .btn-warning');
-  addBtn.innerHTML = '<i class="fas fa-save"></i> تحديث الصيانة';
-  addBtn.onclick = function() { updateMaintenanceItem(maintenanceId); };
-  
-  // إظهار رسالة
-  showAlert(maintenanceAlert, 'يمكنك تعديل بيانات الصيانة الآن', 'info');
-}
-
-// تحديث بيانات الصيانة
-function updateMaintenanceItem(maintenanceId) {
-  const maintenanceIndex = maintenance.findIndex(m => m.id === maintenanceId);
-  if (maintenanceIndex === -1) return;
-  
-  const customerId = maintenanceCustomerSelect.value;
-  const date = document.getElementById('maintenance-date').value;
-  const expectedDate = document.getElementById('maintenance-expected-date').value;
-  const deviceType = document.getElementById('maintenance-device-type').value;
-  const deviceBrand = document.getElementById('maintenance-device-brand').value.trim();
-  const deviceModel = document.getElementById('maintenance-device-model').value.trim();
-  const problem = document.getElementById('maintenance-problem').value.trim();
-  const status = document.getElementById('maintenance-status').value;
-  const cost = document.getElementById('maintenance-cost').value;
-  const priority = document.getElementById('maintenance-priority').value;
-  const notes = document.getElementById('maintenance-notes').value.trim();
-  
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !deviceType || !problem) {
-    showAlert(maintenanceAlert, 'يرجى ملء بيانات العميل وتاريخ الاستلام ونوع الجهاز ووصف المشكلة', 'error');
-    return;
-  }
-  
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) {
-    showAlert(maintenanceAlert, 'العميل غير موجود', 'error');
-    return;
-  }
-  
-  // تحديث بيانات الصيانة
-  maintenance[maintenanceIndex] = {
-    ...maintenance[maintenanceIndex],
-    customerId,
-    customerName: customer.name,
-    customerPhone: customer.phone,
-    date,
-    expectedDate,
-    deviceType,
-    deviceBrand,
-    deviceModel,
-    problem,
-    status,
-    cost: cost || 0,
-    priority,
-    notes,
-    updatedAt: new Date().toISOString()
-  };
-  
-  // حفظ في localStorage
-  localStorage.setItem('maintenance', JSON.stringify(maintenance));
-  
-  // إظهار رسالة النجاح
-  showAlert(maintenanceAlert, 'تم تحديث بيانات الصيانة بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  updateView();
-  
-  // إعادة تعيين الزر
-  setTimeout(() => {
-    const addBtn = document.querySelector('#maintenance-tab .btn-warning');
-    addBtn.innerHTML = '<i class="fas fa-tools"></i> استلام الجهاز';
-    addBtn.onclick = addMaintenance;
-    
-    clearMaintenanceForm();
-  }, 1500);
-}
-
-// حذف صيانة
-function deleteMaintenance(maintenanceId) {
-  if (!confirm('هل أنت متأكد من حذف بيانات الصيانة هذه؟')) {
-    return;
-  }
-  
-  // حذف الصيانة
-  maintenance = maintenance.filter(m => m.id !== maintenanceId);
-  
-  // حفظ التغييرات
-  localStorage.setItem('maintenance', JSON.stringify(maintenance));
-  
-  // تحديث العرض
-  updateView();
-  
-  // إظهار رسالة
-  showAlert(maintenanceAlert, 'تم حذف بيانات الصيانة بنجاح', 'success');
-}
-
-// تعديل طلب
-function editOrder(orderId) {
-  // الانتقال إلى تبويب إضافة طلب جديد
-  document.querySelector('[data-tab="orders-tab"]').click();
-  
-  // البحث عن الطلب
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return;
-  
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === order.customerId);
-  if (!customer) return;
-  
-  // ملء النموذج ببيانات الطلب
-  document.getElementById('order-customer').value = order.customerId;
-  document.getElementById('order-date').value = order.date;
-  document.getElementById('order-due-date').value = order.dueDate || '';
-  document.getElementById('order-items').value = order.items;
-  document.getElementById('order-amount').value = order.amount || '';
-  document.getElementById('order-status').value = order.status;
-  document.getElementById('order-priority').value = order.priority;
-  
-  // تغيير نص زر الإضافة
-  const addBtn = document.querySelector('#orders-tab .btn-success');
-  addBtn.innerHTML = '<i class="fas fa-save"></i> تحديث الطلب';
-  addBtn.onclick = function() { updateOrder(orderId); };
-  
-  // إظهار رسالة
-  showAlert(orderAlert, 'يمكنك تعديل بيانات الطلب الآن', 'info');
-}
-
-// تحديث بيانات الطلب
-function updateOrder(orderId) {
-  const orderIndex = orders.findIndex(o => o.id === orderId);
-  if (orderIndex === -1) return;
-  
-  const customerId = orderCustomerSelect.value;
-  const date = document.getElementById('order-date').value;
-  const dueDate = document.getElementById('order-due-date').value;
-  const items = document.getElementById('order-items').value.trim();
-  const amount = document.getElementById('order-amount').value;
-  const status = document.getElementById('order-status').value;
-  const priority = document.getElementById('order-priority').value;
-  
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !items) {
-    showAlert(orderAlert, 'يرجى ملء بيانات العميل وتاريخ الطلب والمطلوب من المحل', 'error');
-    return;
-  }
-  
-  // البحث عن العميل
-  const customer = customers.find(c => c.id === customerId);
-  if (!customer) {
-    showAlert(orderAlert, 'العميل غير موجود', 'error');
-    return;
-  }
-  
-  // تحديث بيانات الطلب
-  orders[orderIndex] = {
-    ...orders[orderIndex],
-    customerId,
-    customerName: customer.name,
-    customerPhone: customer.phone,
-    date,
-    dueDate,
-    items,
-    amount: amount || 0,
-    status,
-    priority,
-    updatedAt: new Date().toISOString()
-  };
-  
-  // حفظ في localStorage
-  localStorage.setItem('orders', JSON.stringify(orders));
-  
-  // إظهار رسالة النجاح
-  showAlert(orderAlert, 'تم تحديث بيانات الطلب بنجاح!', 'success');
-  
-  // تحديث عرض البيانات
-  updateView();
-  
-  // إعادة تعيين الزر
-  setTimeout(() => {
-    const addBtn = document.querySelector('#orders-tab .btn-success');
-    addBtn.innerHTML = '<i class="fas fa-plus-circle"></i> إضافة الطلب';
-    addBtn.onclick = addOrder;
-    
-    clearOrderForm();
-  }, 1500);
-}
-
-// وظائف مساعدة
-function showAlert(alertElement, message, type) {
-  alertElement.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-    ${message}
-  `;
-  
-  alertElement.className = `alert alert-${type}`;
-  alertElement.style.display = 'flex';
-  
-  // إخفاء التنبيه بعد 5 ثواني
-  setTimeout(() => {
-    alertElement.style.display = 'none';
-  }, 5000);
-}
-
-function formatDate(dateString) {
-  if (!dateString) return 'غير محدد';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('ar-EG', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
-
-function truncateText(text, maxLength) {
-  if (!text) return '';
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
 }
 
 function getStatusClass(status) {
