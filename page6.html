@@ -2,958 +2,148 @@
 <html lang="ar">
 <head>
 <meta charset="utf-8">
-<title>نظام إدارة العملاء والطلبات والصيانة - النسخة المتكاملة</title>
+<title>نظام إدارة العملاء والطلبات والصيانة</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Cairo', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  direction: rtl;
-  min-height: 100vh;
-  padding: 20px;
-  color: #333;
-}
-
-.container {
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-  color: white;
-}
-
-.header h1 {
-  font-size: 2.8rem;
-  margin-bottom: 10px;
-  font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.header p {
-  font-size: 1.2rem;
-  opacity: 0.9;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* تبويبات الصفحة */
-.tabs-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 0;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  margin-bottom: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
-
-.tabs-header {
-  display: flex;
-  background: linear-gradient(to right, #667eea, #764ba2);
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.tab-btn {
-  flex: 1;
-  min-width: 200px;
-  padding: 20px;
-  font-size: 1.1rem;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-family: 'Cairo', sans-serif;
-  position: relative;
-}
-
-.tab-btn:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.tab-btn.active {
-  color: white;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.tab-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 4px;
-  background: white;
-}
-
-.tab-content {
-  padding: 40px;
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* تصميم النماذج */
-.form-container {
-  background: #f5f7ff;
-  border-radius: 15px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.form-title {
-  font-size: 1.5rem;
-  color: #764ba2;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e6e9ff;
-  font-weight: 700;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #555;
-  font-size: 1rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-family: 'Cairo', sans-serif;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.form-actions {
-  display: flex;
-  gap: 15px;
-  justify-content: flex-end;
-  margin-top: 30px;
-}
-
-.btn {
-  padding: 15px 30px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-family: 'Cairo', sans-serif;
-}
-
-.btn-primary {
-  background: linear-gradient(to right, #667eea, #764ba2);
-  color: white;
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-}
-
-.btn-secondary {
-  background: #f0f5ff;
-  color: #667eea;
-  border: 1px solid #667eea;
-}
-
-.btn-secondary:hover {
-  background: #e6e9ff;
-}
-
-.btn-success {
-  background: linear-gradient(to right, #4CAF50, #45a049);
-  color: white;
-  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-}
-
-.btn-success:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
-}
-
-.btn-warning {
-  background: linear-gradient(to right, #FF9800, #F57C00);
-  color: white;
-  box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
-}
-
-.btn-warning:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4);
-}
-
-.btn-info {
-  background: linear-gradient(to right, #2196F3, #1976D2);
-  color: white;
-  box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
-}
-
-.btn-info:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4);
-}
-
-.btn-danger {
-  background: linear-gradient(to right, #F44336, #D32F2F);
-  color: white;
-  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
-}
-
-.btn-danger:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
-}
-
-/* تصميم عرض البيانات */
-.data-container {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  margin-top: 30px;
-}
-
-.search-box-container {
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.search-box {
-  width: 100%;
-  padding: 18px 60px 18px 25px;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 12px;
-  background: #f5f7ff;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  font-family: 'Cairo', sans-serif;
-}
-
-.search-box:focus {
-  outline: none;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(102, 126, 234, 0.2);
-  background: white;
-}
-
-.search-icon {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #764ba2;
-  font-size: 1.2rem;
-}
-
-/* إحصائيات */
-.stats-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: linear-gradient(135deg, #f5f7ff 0%, #e3e9ff 100%);
-  border-radius: 15px;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  border-left: 5px solid #667eea;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card h3 {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.stat-card p {
-  font-size: 1rem;
-  color: #764ba2;
-  font-weight: 600;
-}
-
-/* بطاقات العملاء والصيانة والطلبات */
-.customers-container,
-.maintenance-container,
-.orders-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 25px;
-  margin-top: 30px;
-}
-
-.customer-card,
-.maintenance-card,
-.order-card {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.customer-card:hover,
-.maintenance-card:hover,
-.order-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-}
-
-/* تصميم بطاقة العميل */
-.customer-card {
-  border-top: 5px solid #667eea;
-}
-
-.customer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.customer-name {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #333;
-  line-height: 1.3;
-}
-
-.customer-type {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  margin-top: 5px;
-}
-
-.type-normal {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.type-vip {
-  background: linear-gradient(to right, #ffd93d, #ffc107);
-  color: #333;
-}
-
-.type-wholesale {
-  background: linear-gradient(to right, #4fc3f7, #039be5);
-  color: white;
-}
-
-.type-company {
-  background: linear-gradient(to right, #9575cd, #673ab7);
-  color: white;
-}
-
-.customer-details {
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.customer-details p {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  color: #555;
-  display: flex;
-  align-items: center;
-}
-
-.customer-details i {
-  margin-left: 8px;
-  color: #764ba2;
-  width: 20px;
-  text-align: center;
-}
-
-.customer-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.customer-stat {
-  background: #f0f5ff;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  color: #667eea;
-  font-size: 0.9rem;
-}
-
-.customer-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-  justify-content: space-between;
-}
-
-/* تصميم بطاقة الصيانة */
-.maintenance-card {
-  border-top: 5px solid #FF9800;
-}
-
-.maintenance-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.maintenance-customer {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #333;
-}
-
-.maintenance-date {
-  font-size: 0.9rem;
-  color: #888;
-  background: #f5f5f5;
-  padding: 5px 10px;
-  border-radius: 20px;
-}
-
-.maintenance-details {
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.maintenance-details p {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  color: #555;
-}
-
-.maintenance-device {
-  font-weight: 700;
-  color: #FF9800;
-  font-size: 1.1rem;
-  margin-bottom: 5px;
-}
-
-.maintenance-problem {
-  background: #fff3e0;
-  padding: 10px;
-  border-radius: 8px;
-  margin: 10px 0;
-  border-right: 3px solid #FF9800;
-}
-
-.maintenance-status {
-  display: inline-block;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.status-received {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.status-diagnosis {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.status-repair {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.status-ready {
-  background: #e8f5e9;
-  color: #388e3c;
-}
-
-.status-delivered {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.maintenance-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
-}
-
-.maintenance-cost {
-  font-weight: 700;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-/* تصميم بطاقة الطلب */
-.order-card {
-  border-top: 5px solid #4CAF50;
-}
-
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.order-customer {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #333;
-}
-
-.order-date {
-  font-size: 0.9rem;
-  color: #888;
-  background: #f5f5f5;
-  padding: 5px 10px;
-  border-radius: 20px;
-}
-
-.order-details {
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.order-details p {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  color: #555;
-}
-
-.order-status {
-  display: inline-block;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.status-pending {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.status-processing {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.status-completed {
-  background: #e8f5e9;
-  color: #388e3c;
-}
-
-.status-cancelled {
-  background: #ffebee;
-  color: #d32f2f;
-}
-
-.order-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
-}
-
-.order-priority {
-  color: #888;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.priority-normal {
-  color: #4CAF50;
-}
-
-.priority-medium {
-  color: #FF9800;
-}
-
-.priority-high {
-  color: #F44336;
-}
-
-/* أزرار الإجراءات */
-.action-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-family: 'Cairo', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  flex: 1;
-}
-
-.action-btn.view {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.action-btn.edit {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.action-btn.delete {
-  background: #ffebee;
-  color: #d32f2f;
-}
-
-.action-btn.update {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.action-btn.complete {
-  background: #e8f5e9;
-  color: #388e3c;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* رسائل عدم وجود بيانات */
-.no-data {
-  text-align: center;
-  padding: 50px 20px;
-  color: #888;
-  font-size: 1.2rem;
-  grid-column: 1 / -1;
-}
-
-.no-data i {
-  font-size: 3rem;
-  color: #ddd;
-  margin-bottom: 15px;
-}
-
-/* رسائل التنبيه */
-.alert {
-  padding: 15px 20px;
-  border-radius: 10px;
-  margin-bottom: 25px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.alert-success {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border-right: 4px solid #4CAF50;
-}
-
-.alert-error {
-  background: #ffebee;
-  color: #c62828;
-  border-right: 4px solid #f44336;
-}
-
-.alert-info {
-  background: #e3f2fd;
-  color: #1565c0;
-  border-right: 4px solid #2196F3;
-}
-
-.alert-warning {
-  background: #fff3e0;
-  color: #f57c00;
-  border-right: 4px solid #FF9800;
-}
-
-.footer {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 50px;
-  padding: 20px;
-  font-size: 0.9rem;
-}
-
-/* تحسينات للهواتف */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); direction: rtl; min-height: 100vh; padding: 20px; color: #333; }
+.container { max-width: 1600px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 40px; color: white; }
+.header h1 { font-size: 2.8rem; margin-bottom: 10px; font-weight: 700; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+.header p { font-size: 1.2rem; opacity: 0.9; max-width: 800px; margin: 0 auto; }
+.tabs-container { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 0; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); margin-bottom: 40px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; }
+.tabs-header { display: flex; background: linear-gradient(to right, #667eea, #764ba2); padding: 0; flex-wrap: wrap; }
+.tab-btn { flex: 1; min-width: 200px; padding: 20px; font-size: 1.1rem; border: none; background: transparent; color: rgba(255, 255, 255, 0.8); cursor: pointer; font-weight: 600; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; position: relative; }
+.tab-btn:hover { color: white; background: rgba(255, 255, 255, 0.1); }
+.tab-btn.active { color: white; background: rgba(255, 255, 255, 0.2); }
+.tab-btn.active::after { content: ''; position: absolute; bottom: 0; right: 0; width: 100%; height: 4px; background: white; }
+.tab-content { padding: 40px; display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.form-container { background: #f5f7ff; border-radius: 15px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); }
+.form-title { font-size: 1.5rem; color: #764ba2; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #e6e9ff; font-weight: 700; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 8px; font-weight: 600; color: #555; font-size: 1rem; }
+.form-group input, .form-group select, .form-group textarea { padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: 'Cairo', sans-serif; transition: all 0.3s ease; background: white; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
+.form-group textarea { resize: vertical; min-height: 120px; }
+.form-actions { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; }
+.btn { padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
+.btn-primary { background: linear-gradient(to right, #667eea, #764ba2); color: white; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+.btn-secondary { background: #f0f5ff; color: #667eea; border: 1px solid #667eea; }
+.btn-secondary:hover { background: #e6e9ff; }
+.btn-success { background: linear-gradient(to right, #4CAF50, #45a049); color: white; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }
+.btn-success:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4); }
+.btn-warning { background: linear-gradient(to right, #FF9800, #F57C00); color: white; box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3); }
+.btn-warning:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4); }
+.btn-info { background: linear-gradient(to right, #2196F3, #1976D2); color: white; box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3); }
+.btn-info:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(33, 150, 243, 0.4); }
+.data-container { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); margin-top: 30px; }
+.search-box-container { margin-bottom: 30px; position: relative; }
+.search-box { width: 100%; padding: 18px 60px 18px 25px; font-size: 1.1rem; border: none; border-radius: 12px; background: #f5f7ff; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; font-family: 'Cairo', sans-serif; }
+.search-box:focus { outline: none; box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(102, 126, 234, 0.2); background: white; }
+.search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: #764ba2; font-size: 1.2rem; }
+.stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.stat-card { background: linear-gradient(135deg, #f5f7ff 0%, #e3e9ff 100%); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border-left: 5px solid #667eea; transition: all 0.3s ease; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+.stat-card h3 { font-size: 2rem; font-weight: 800; color: #333; margin-bottom: 5px; }
+.stat-card p { font-size: 1rem; color: #764ba2; font-weight: 600; }
+.customers-container, .maintenance-container, .orders-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-top: 30px; }
+.customer-card, .maintenance-card, .order-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; }
+.customer-card:hover, .maintenance-card:hover, .order-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12); }
+.customer-card { border-top: 5px solid #667eea; }
+.customer-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+.customer-name { font-size: 1.4rem; font-weight: 700; color: #333; line-height: 1.3; }
+.customer-type { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; margin-top: 5px; }
+.type-normal { background: #f5f5f5; color: #666; }
+.type-vip { background: linear-gradient(to right, #ffd93d, #ffc107); color: #333; }
+.type-wholesale { background: linear-gradient(to right, #4fc3f7, #039be5); color: white; }
+.type-company { background: linear-gradient(to right, #9575cd, #673ab7); color: white; }
+.customer-details { margin-bottom: 20px; flex-grow: 1; }
+.customer-details p { margin-bottom: 10px; line-height: 1.6; color: #555; display: flex; align-items: center; }
+.customer-details i { margin-left: 8px; color: #764ba2; width: 20px; text-align: center; }
+.customer-stats { display: flex; justify-content: space-between; margin-top: 10px; }
+.customer-stat { background: #f0f5ff; padding: 8px 15px; border-radius: 20px; font-weight: 600; color: #667eea; font-size: 0.9rem; }
+.customer-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: space-between; }
+.maintenance-card { border-top: 5px solid #FF9800; }
+.maintenance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+.maintenance-customer { font-size: 1.3rem; font-weight: 700; color: #333; }
+.maintenance-date { font-size: 0.9rem; color: #888; background: #f5f5f5; padding: 5px 10px; border-radius: 20px; }
+.maintenance-details { margin-bottom: 20px; flex-grow: 1; }
+.maintenance-details p { margin-bottom: 10px; line-height: 1.6; color: #555; }
+.maintenance-device { font-weight: 700; color: #FF9800; font-size: 1.1rem; margin-bottom: 5px; }
+.maintenance-problem { background: #fff3e0; padding: 10px; border-radius: 8px; margin: 10px 0; border-right: 3px solid #FF9800; }
+.maintenance-status { display: inline-block; padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+.status-received { background: #e3f2fd; color: #1976d2; }
+.status-diagnosis { background: #fff3e0; color: #f57c00; }
+.status-repair { background: #f3e5f5; color: #7b1fa2; }
+.status-ready { background: #e8f5e9; color: #388e3c; }
+.status-delivered { background: #f5f5f5; color: #666; }
+.maintenance-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.maintenance-cost { font-weight: 700; color: #333; font-size: 1.1rem; }
+.order-card { border-top: 5px solid #4CAF50; }
+.order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+.order-customer { font-size: 1.3rem; font-weight: 700; color: #333; }
+.order-date { font-size: 0.9rem; color: #888; background: #f5f5f5; padding: 5px 10px; border-radius: 20px; }
+.order-details { margin-bottom: 20px; flex-grow: 1; }
+.order-details p { margin-bottom: 10px; line-height: 1.6; color: #555; }
+.order-status { display: inline-block; padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+.status-pending { background: #fff3e0; color: #f57c00; }
+.status-processing { background: #e3f2fd; color: #1976d2; }
+.status-completed { background: #e8f5e9; color: #388e3c; }
+.status-cancelled { background: #ffebee; color: #d32f2f; }
+.order-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.order-priority { color: #888; font-size: 0.9rem; font-weight: 600; }
+.priority-normal { color: #4CAF50; }
+.priority-medium { color: #FF9800; }
+.priority-high { color: #F44336; }
+.action-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; }
+.action-btn.view { background: #e3f2fd; color: #1976d2; }
+.action-btn.edit { background: #f3e5f5; color: #7b1fa2; }
+.action-btn.delete { background: #ffebee; color: #d32f2f; }
+.action-btn.update { background: #fff3e0; color: #f57c00; }
+.action-btn.complete { background: #e8f5e9; color: #388e3c; }
+.action-btn:hover { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); }
+.no-data { text-align: center; padding: 50px 20px; color: #888; font-size: 1.2rem; grid-column: 1 / -1; }
+.no-data i { font-size: 3rem; color: #ddd; margin-bottom: 15px; }
+.alert { padding: 15px 20px; border-radius: 10px; margin-bottom: 25px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.alert-success { background: #e8f5e9; color: #2e7d32; border-right: 4px solid #4CAF50; }
+.alert-error { background: #ffebee; color: #c62828; border-right: 4px solid #f44336; }
+.alert-info { background: #e3f2fd; color: #1565c0; border-right: 4px solid #2196F3; }
+.alert-warning { background: #fff3e0; color: #f57c00; border-right: 4px solid #FF9800; }
+.footer { text-align: center; color: rgba(255, 255, 255, 0.8); margin-top: 50px; padding: 20px; font-size: 0.9rem; }
+.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; color: white; flex-direction: column; gap: 20px; }
+.spinner { width: 60px; height: 60px; border: 5px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #667eea; animation: spin 1s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 768px) {
-  .header h1 {
-    font-size: 2.2rem;
-  }
-  
-  .tabs-header {
-    flex-direction: column;
-  }
-  
-  .tab-btn {
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .tab-content {
-    padding: 25px;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .customers-container,
-  .maintenance-container,
-  .orders-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .customer-actions,
-  .maintenance-actions,
-  .order-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .stats-container {
-    grid-template-columns: 1fr;
-  }
+  .header h1 { font-size: 2.2rem; }
+  .tabs-header { flex-direction: column; }
+  .tab-btn { width: 100%; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+  .tab-content { padding: 25px; }
+  .form-row { grid-template-columns: 1fr; }
+  .customers-container, .maintenance-container, .orders-container { grid-template-columns: 1fr; }
+  .form-actions { flex-direction: column; }
+  .customer-actions, .maintenance-actions, .order-actions { flex-direction: column; gap: 10px; }
+  .stats-container { grid-template-columns: 1fr; }
 }
-
 @media (min-width: 992px) {
-  .customers-container,
-  .maintenance-container,
-  .orders-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .customers-container, .maintenance-container, .orders-container { grid-template-columns: repeat(2, 1fr); }
 }
-
 @media (min-width: 1200px) {
-  .customers-container,
-  .maintenance-container,
-  .orders-container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* مؤشر التحميل */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  color: white;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 5px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #667eea;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* إعدادات النظام */
-.settings-panel {
-  background: white;
-  border-radius: 15px;
-  padding: 25px;
-  margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-}
-
-.settings-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.settings-header h3 {
-  color: #764ba2;
-  font-size: 1.4rem;
-}
-
-.toggle-settings {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 600;
-}
-
-.settings-content {
-  display: none;
-}
-
-.settings-content.show {
-  display: block;
-  animation: fadeIn 0.3s ease;
+  .customers-container, .maintenance-container, .orders-container { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
   <div class="header">
     <h1><i class="fas fa-users"></i> نظام إدارة العملاء والطلبات والصيانة</h1>
-    <p>إدارة كاملة للعملاء، طلبات المحل، واستلام الأجهزة للصيانة مع ربط مباشر بجوجل شيت</p>
-  </div>
-  
-  <!-- إعدادات النظام -->
-  <div class="settings-panel">
-    <div class="settings-header">
-      <h3><i class="fas fa-cog"></i> إعدادات النظام</h3>
-      <button class="toggle-settings" id="toggle-settings">
-        <i class="fas fa-sliders-h"></i> إظهار/إخفاء الإعدادات
-      </button>
-    </div>
-    
-    <div class="settings-content" id="settings-content">
-      <div id="settings-alert" class="alert" style="display: none;"></div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="script-url"><i class="fas fa-link"></i> رابط تطبيق Google Apps Script</label>
-          <input type="text" id="script-url" placeholder="أدخل رابط Web App الخاص بك">
-          <small style="color: #666; margin-top: 5px;">رابط Web App من نشر Google Apps Script</small>
-        </div>
-        
-        <div class="form-group">
-          <label for="google-sheet-id"><i class="fab fa-google"></i> رابط جوجل شيت</label>
-          <input type="text" id="google-sheet-id" placeholder="أدخل رابط جوجل شيت">
-          <small style="color: #666; margin-top: 5px;">للتأكد من إنشاء الأوراق الصحيحة</small>
-        </div>
-      </div>
-      
-      <div class="form-actions">
-        <button class="btn btn-info" onclick="saveSystemSettings()">
-          <i class="fas fa-save"></i> حفظ الإعدادات
-        </button>
-        <button class="btn btn-success" onclick="testConnection()">
-          <i class="fas fa-plug"></i> اختبار الاتصال
-        </button>
-        <button class="btn btn-warning" onclick="setupGoogleSheet()">
-          <i class="fas fa-magic"></i> إعداد الجدول تلقائياً
-        </button>
-      </div>
-      
-      <div class="form-row" style="margin-top: 20px;">
-        <div class="form-group">
-          <label>حالة الاتصال:</label>
-          <div id="connection-status" style="padding: 10px; border-radius: 8px; background: #f5f5f5; margin-top: 5px;">
-            <span style="color: #888;">لم يتم اختبار الاتصال بعد</span>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>إحصائيات النظام:</label>
-          <div id="system-stats" style="padding: 10px; border-radius: 8px; background: #f5f5f5; margin-top: 5px;">
-            <span style="color: #888;">جاري التحميل...</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <p>إدارة كاملة للعملاء، طلبات المحل، واستلام الأجهزة للصيانة</p>
   </div>
   
   <div class="tabs-container">
@@ -976,62 +166,25 @@ body {
     <div id="customers-tab" class="tab-content active">
       <div class="form-container">
         <h3 class="form-title"><i class="fas fa-user-plus"></i> بيانات العميل الجديد</h3>
-        
         <div id="customer-alert" class="alert" style="display: none;"></div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="customer-name"><i class="fas fa-user"></i> اسم العميل *</label>
-            <input type="text" id="customer-name" placeholder="أدخل اسم العميل الكامل">
-          </div>
-          
-          <div class="form-group">
-            <label for="customer-phone"><i class="fas fa-phone"></i> رقم الهاتف *</label>
-            <input type="tel" id="customer-phone" placeholder="أدخل رقم الهاتف">
-          </div>
-          
-          <div class="form-group">
-            <label for="customer-email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
-            <input type="email" id="customer-email" placeholder="أدخل البريد الإلكتروني">
-          </div>
+          <div class="form-group"><label for="customer-name"><i class="fas fa-user"></i> اسم العميل *</label><input type="text" id="customer-name" placeholder="أدخل اسم العميل الكامل"></div>
+          <div class="form-group"><label for="customer-phone"><i class="fas fa-phone"></i> رقم الهاتف *</label><input type="tel" id="customer-phone" placeholder="أدخل رقم الهاتف"></div>
+          <div class="form-group"><label for="customer-email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label><input type="email" id="customer-email" placeholder="أدخل البريد الإلكتروني"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="customer-address"><i class="fas fa-map-marker-alt"></i> العنوان</label>
-            <input type="text" id="customer-address" placeholder="أدخل عنوان العميل">
+          <div class="form-group"><label for="customer-address"><i class="fas fa-map-marker-alt"></i> العنوان</label><input type="text" id="customer-address" placeholder="أدخل عنوان العميل"></div>
+          <div class="form-group"><label for="customer-type"><i class="fas fa-tag"></i> نوع العميل</label>
+            <select id="customer-type"><option value="عادي">عميل عادي</option><option value="مميز">عميل مميز</option><option value="جملة">عميل جملة</option><option value="شركة">شركة</option></select>
           </div>
-          
-          <div class="form-group">
-            <label for="customer-type"><i class="fas fa-tag"></i> نوع العميل</label>
-            <select id="customer-type">
-              <option value="عادي">عميل عادي</option>
-              <option value="مميز">عميل مميز</option>
-              <option value="جملة">عميل جملة</option>
-              <option value="شركة">شركة</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="customer-reg-date"><i class="fas fa-calendar"></i> تاريخ التسجيل</label>
-            <input type="date" id="customer-reg-date" value="">
-          </div>
+          <div class="form-group"><label for="customer-reg-date"><i class="fas fa-calendar"></i> تاريخ التسجيل</label><input type="date" id="customer-reg-date"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="customer-notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label>
-            <textarea id="customer-notes" placeholder="أي ملاحظات إضافية عن العميل..."></textarea>
-          </div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label for="customer-notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label><textarea id="customer-notes" placeholder="أي ملاحظات إضافية عن العميل..."></textarea></div>
         </div>
-        
         <div class="form-actions">
-          <button class="btn btn-secondary" onclick="clearCustomerForm()">
-            <i class="fas fa-eraser"></i> مسح النموذج
-          </button>
-          <button class="btn btn-primary" onclick="addCustomer()">
-            <i class="fas fa-save"></i> حفظ العميل
-          </button>
+          <button class="btn btn-secondary" onclick="clearCustomerForm()"><i class="fas fa-eraser"></i> مسح النموذج</button>
+          <button class="btn btn-primary" onclick="addCustomer()"><i class="fas fa-save"></i> حفظ العميل</button>
         </div>
       </div>
     </div>
@@ -1040,68 +193,23 @@ body {
     <div id="orders-tab" class="tab-content">
       <div class="form-container">
         <h3 class="form-title"><i class="fas fa-shopping-cart"></i> بيانات الطلب الجديد</h3>
-        
         <div id="order-alert" class="alert" style="display: none;"></div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="order-customer"><i class="fas fa-user"></i> اختر العميل *</label>
-            <select id="order-customer">
-              <option value="">-- اختر العميل --</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="order-date"><i class="fas fa-calendar"></i> تاريخ الطلب *</label>
-            <input type="date" id="order-date" value="">
-          </div>
-          
-          <div class="form-group">
-            <label for="order-due-date"><i class="fas fa-calendar-alt"></i> تاريخ التسليم</label>
-            <input type="date" id="order-due-date">
-          </div>
+          <div class="form-group"><label for="order-customer"><i class="fas fa-user"></i> اختر العميل *</label><select id="order-customer"><option value="">-- اختر العميل --</option></select></div>
+          <div class="form-group"><label for="order-date"><i class="fas fa-calendar"></i> تاريخ الطلب *</label><input type="date" id="order-date"></div>
+          <div class="form-group"><label for="order-due-date"><i class="fas fa-calendar-alt"></i> تاريخ التسليم</label><input type="date" id="order-due-date"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="order-items"><i class="fas fa-boxes"></i> المطلوب من المحل *</label>
-            <textarea id="order-items" placeholder="صف تفاصيل المطلوب من المحل بالتفصيل..."></textarea>
-          </div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label for="order-items"><i class="fas fa-boxes"></i> المطلوب من المحل *</label><textarea id="order-items" placeholder="صف تفاصيل المطلوب من المحل بالتفصيل..."></textarea></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="order-amount"><i class="fas fa-money-bill-wave"></i> المبلغ (ريال)</label>
-            <input type="number" id="order-amount" placeholder="أدخل المبلغ">
-          </div>
-          
-          <div class="form-group">
-            <label for="order-status"><i class="fas fa-info-circle"></i> حالة الطلب</label>
-            <select id="order-status">
-              <option value="معلق">معلق</option>
-              <option value="قيد التنفيذ">قيد التنفيذ</option>
-              <option value="منتهي">منتهي</option>
-              <option value="ملغى">ملغى</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="order-priority"><i class="fas fa-exclamation-circle"></i> أولوية الطلب</label>
-            <select id="order-priority">
-              <option value="عادية">عادية</option>
-              <option value="متوسطة">متوسطة</option>
-              <option value="عاجلة">عاجلة</option>
-            </select>
-          </div>
+          <div class="form-group"><label for="order-amount"><i class="fas fa-money-bill-wave"></i> المبلغ (ريال)</label><input type="number" id="order-amount" placeholder="أدخل المبلغ"></div>
+          <div class="form-group"><label for="order-status"><i class="fas fa-info-circle"></i> حالة الطلب</label><select id="order-status"><option value="معلق">معلق</option><option value="قيد التنفيذ">قيد التنفيذ</option><option value="منتهي">منتهي</option><option value="ملغى">ملغى</option></select></div>
+          <div class="form-group"><label for="order-priority"><i class="fas fa-exclamation-circle"></i> أولوية الطلب</label><select id="order-priority"><option value="عادية">عادية</option><option value="متوسطة">متوسطة</option><option value="عاجلة">عاجلة</option></select></div>
         </div>
-        
         <div class="form-actions">
-          <button class="btn btn-secondary" onclick="clearOrderForm()">
-            <i class="fas fa-eraser"></i> مسح النموذج
-          </button>
-          <button class="btn btn-success" onclick="addOrder()">
-            <i class="fas fa-plus-circle"></i> إضافة الطلب
-          </button>
+          <button class="btn btn-secondary" onclick="clearOrderForm()"><i class="fas fa-eraser"></i> مسح النموذج</button>
+          <button class="btn btn-success" onclick="addOrder()"><i class="fas fa-plus-circle"></i> إضافة الطلب</button>
         </div>
       </div>
     </div>
@@ -1110,102 +218,45 @@ body {
     <div id="maintenance-tab" class="tab-content">
       <div class="form-container">
         <h3 class="form-title"><i class="fas fa-tools"></i> استلام جهاز للصيانة</h3>
-        
         <div id="maintenance-alert" class="alert" style="display: none;"></div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="maintenance-customer"><i class="fas fa-user"></i> اختر العميل *</label>
-            <select id="maintenance-customer">
-              <option value="">-- اختر العميل --</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="maintenance-date"><i class="fas fa-calendar"></i> تاريخ الاستلام *</label>
-            <input type="date" id="maintenance-date" value="">
-          </div>
-          
-          <div class="form-group">
-            <label for="maintenance-expected-date"><i class="fas fa-calendar-alt"></i> تاريخ التسليم المتوقع</label>
-            <input type="date" id="maintenance-expected-date">
-          </div>
+          <div class="form-group"><label for="maintenance-customer"><i class="fas fa-user"></i> اختر العميل *</label><select id="maintenance-customer"><option value="">-- اختر العميل --</option></select></div>
+          <div class="form-group"><label for="maintenance-date"><i class="fas fa-calendar"></i> تاريخ الاستلام *</label><input type="date" id="maintenance-date"></div>
+          <div class="form-group"><label for="maintenance-expected-date"><i class="fas fa-calendar-alt"></i> تاريخ التسليم المتوقع</label><input type="date" id="maintenance-expected-date"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="maintenance-device-type"><i class="fas fa-laptop"></i> نوع الجهاز *</label>
+          <div class="form-group"><label for="maintenance-device-type"><i class="fas fa-laptop"></i> نوع الجهاز *</label>
             <select id="maintenance-device-type">
               <option value="">-- اختر نوع الجهاز --</option>
-              <option value="لابتوب">لابتوب</option>
-              <option value="كمبيوتر مكتبي">كمبيوتر مكتبي</option>
-              <option value="هاتف محمول">هاتف محمول</option>
-              <option value="تابلت">تابلت</option>
-              <option value="طابعة">طابعة</option>
-              <option value="شاشة">شاشة</option>
+              <option value="لابتوب">لابتوب</option><option value="كمبيوتر مكتبي">كمبيوتر مكتبي</option>
+              <option value="هاتف محمول">هاتف محمول</option><option value="تابلت">تابلت</option>
+              <option value="طابعة">طابعة</option><option value="شاشة">شاشة</option>
               <option value="أخرى">أخرى</option>
             </select>
           </div>
-          
-          <div class="form-group">
-            <label for="maintenance-device-brand"><i class="fas fa-tag"></i> ماركة الجهاز</label>
-            <input type="text" id="maintenance-device-brand" placeholder="أدخل ماركة الجهاز">
-          </div>
-          
-          <div class="form-group">
-            <label for="maintenance-device-model"><i class="fas fa-microchip"></i> موديل الجهاز</label>
-            <input type="text" id="maintenance-device-model" placeholder="أدخل موديل الجهاز">
-          </div>
+          <div class="form-group"><label for="maintenance-device-brand"><i class="fas fa-tag"></i> ماركة الجهاز</label><input type="text" id="maintenance-device-brand" placeholder="أدخل ماركة الجهاز"></div>
+          <div class="form-group"><label for="maintenance-device-model"><i class="fas fa-microchip"></i> موديل الجهاز</label><input type="text" id="maintenance-device-model" placeholder="أدخل موديل الجهاز"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="maintenance-problem"><i class="fas fa-exclamation-triangle"></i> وصف المشكلة *</label>
-            <textarea id="maintenance-problem" placeholder="صف المشكلة التي يعاني منها الجهاز بالتفصيل..."></textarea>
-          </div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label for="maintenance-problem"><i class="fas fa-exclamation-triangle"></i> وصف المشكلة *</label><textarea id="maintenance-problem" placeholder="صف المشكلة التي يعاني منها الجهاز بالتفصيل..."></textarea></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label for="maintenance-status"><i class="fas fa-info-circle"></i> حالة الصيانة</label>
+          <div class="form-group"><label for="maintenance-status"><i class="fas fa-info-circle"></i> حالة الصيانة</label>
             <select id="maintenance-status">
-              <option value="مستلم">مستلم</option>
-              <option value="قيد التشخيص">قيد التشخيص</option>
-              <option value="قيد الإصلاح">قيد الإصلاح</option>
-              <option value="جاهز للتسليم">جاهز للتسليم</option>
+              <option value="مستلم">مستلم</option><option value="قيد التشخيص">قيد التشخيص</option>
+              <option value="قيد الإصلاح">قيد الإصلاح</option><option value="جاهز للتسليم">جاهز للتسليم</option>
               <option value="مسلم">مسلم</option>
             </select>
           </div>
-          
-          <div class="form-group">
-            <label for="maintenance-cost"><i class="fas fa-money-bill-wave"></i> التكلفة المتوقعة (ريال)</label>
-            <input type="number" id="maintenance-cost" placeholder="أدخل التكلفة المتوقعة">
-          </div>
-          
-          <div class="form-group">
-            <label for="maintenance-priority"><i class="fas fa-exclamation-circle"></i> أولوية الصيانة</label>
-            <select id="maintenance-priority">
-              <option value="عادية">عادية</option>
-              <option value="متوسطة">متوسطة</option>
-              <option value="عاجلة">عاجلة</option>
-            </select>
-          </div>
+          <div class="form-group"><label for="maintenance-cost"><i class="fas fa-money-bill-wave"></i> التكلفة المتوقعة (ريال)</label><input type="number" id="maintenance-cost" placeholder="أدخل التكلفة المتوقعة"></div>
+          <div class="form-group"><label for="maintenance-priority"><i class="fas fa-exclamation-circle"></i> أولوية الصيانة</label><select id="maintenance-priority"><option value="عادية">عادية</option><option value="متوسطة">متوسطة</option><option value="عاجلة">عاجلة</option></select></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group" style="grid-column: 1 / -1;">
-            <label for="maintenance-notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label>
-            <textarea id="maintenance-notes" placeholder="أي ملاحظات إضافية عن الصيانة..."></textarea>
-          </div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label for="maintenance-notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label><textarea id="maintenance-notes" placeholder="أي ملاحظات إضافية عن الصيانة..."></textarea></div>
         </div>
-        
         <div class="form-actions">
-          <button class="btn btn-secondary" onclick="clearMaintenanceForm()">
-            <i class="fas fa-eraser"></i> مسح النموذج
-          </button>
-          <button class="btn btn-warning" onclick="addMaintenance()">
-            <i class="fas fa-tools"></i> استلام الجهاز
-          </button>
+          <button class="btn btn-secondary" onclick="clearMaintenanceForm()"><i class="fas fa-eraser"></i> مسح النموذج</button>
+          <button class="btn btn-warning" onclick="addMaintenance()"><i class="fas fa-tools"></i> استلام الجهاز</button>
         </div>
       </div>
     </div>
@@ -1214,593 +265,287 @@ body {
     <div id="view-tab" class="tab-content">
       <div class="data-container">
         <div class="search-box-container">
-          <div class="search-icon">
-            <i class="fas fa-search"></i>
-          </div>
+          <div class="search-icon"><i class="fas fa-search"></i></div>
           <input type="text" class="search-box" id="search-input" placeholder="ابحث عن عميل أو طلب أو جهاز صيانة...">
         </div>
-        
         <div class="form-actions" style="margin-bottom: 20px;">
-          <button class="btn btn-info" onclick="loadAllData()">
-            <i class="fas fa-sync-alt"></i> تحديث البيانات
-          </button>
-          <button class="btn btn-success" onclick="exportToExcel()">
-            <i class="fas fa-file-excel"></i> تصدير البيانات
-          </button>
-          <button class="btn btn-danger" onclick="clearAllData()" style="display: none;" id="clear-data-btn">
-            <i class="fas fa-trash"></i> حذف كل البيانات (محلياً)
-          </button>
+          <button class="btn btn-info" onclick="loadAllData()"><i class="fas fa-sync-alt"></i> تحديث البيانات</button>
         </div>
-        
         <div class="stats-container">
-          <div class="stat-card">
-            <h3 id="total-customers">0</h3>
-            <p>إجمالي العملاء</p>
-          </div>
-          <div class="stat-card">
-            <h3 id="total-orders">0</h3>
-            <p>إجمالي الطلبات</p>
-          </div>
-          <div class="stat-card">
-            <h3 id="total-maintenance">0</h3>
-            <p>أجهزة صيانة</p>
-          </div>
-          <div class="stat-card">
-            <h3 id="pending-maintenance">0</h3>
-            <p>صيانة معلقة</p>
-          </div>
+          <div class="stat-card"><h3 id="total-customers">0</h3><p>إجمالي العملاء</p></div>
+          <div class="stat-card"><h3 id="total-orders">0</h3><p>إجمالي الطلبات</p></div>
+          <div class="stat-card"><h3 id="total-maintenance">0</h3><p>أجهزة صيانة</p></div>
+          <div class="stat-card"><h3 id="pending-maintenance">0</h3><p>صيانة معلقة</p></div>
         </div>
-        
         <div class="form-container">
           <h3 class="form-title"><i class="fas fa-users"></i> قائمة العملاء</h3>
-          
-          <div class="customers-container" id="customers-container">
-            <!-- سيتم ملء العملاء هنا كبطاقات -->
-          </div>
-          
-          <div id="no-customers" class="no-data">
-            <i class="fas fa-user-slash"></i>
-            <p>لا يوجد عملاء مسجلين بعد. أضف عميلاً جديداً من تبويب "إضافة عميل جديد"</p>
-          </div>
+          <div class="customers-container" id="customers-container"></div>
+          <div id="no-customers" class="no-data" style="display: none;"><i class="fas fa-user-slash"></i><p>لا يوجد عملاء مسجلين بعد</p></div>
         </div>
-        
         <div class="form-container" style="margin-top: 40px;">
           <h3 class="form-title"><i class="fas fa-tools"></i> أجهزة الصيانة</h3>
-          
-          <div class="maintenance-container" id="maintenance-container">
-            <!-- سيتم ملء أجهزة الصيانة هنا كبطاقات -->
-          </div>
-          
-          <div id="no-maintenance" class="no-data">
-            <i class="fas fa-tools"></i>
-            <p>لا توجد أجهزة مسجلة للصيانة بعد. أضف جهازاً جديداً من تبويب "استلام جهاز للصيانة"</p>
-          </div>
+          <div class="maintenance-container" id="maintenance-container"></div>
+          <div id="no-maintenance" class="no-data" style="display: none;"><i class="fas fa-tools"></i><p>لا توجد أجهزة مسجلة للصيانة بعد</p></div>
         </div>
-        
         <div class="form-container" style="margin-top: 40px;">
           <h3 class="form-title"><i class="fas fa-shopping-bag"></i> أحدث الطلبات</h3>
-          
-          <div class="orders-container" id="orders-container">
-            <!-- سيتم ملء الطلبات هنا كبطاقات -->
-          </div>
-          
-          <div id="no-orders" class="no-data">
-            <i class="fas fa-shopping-basket"></i>
-            <p>لا توجد طلبات مسجلة بعد. أضف طلباً جديداً من تبويب "إضافة طلب جديد"</p>
-          </div>
+          <div class="orders-container" id="orders-container"></div>
+          <div id="no-orders" class="no-data" style="display: none;"><i class="fas fa-shopping-basket"></i><p>لا توجد طلبات مسجلة بعد</p></div>
         </div>
       </div>
     </div>
   </div>
   
   <div class="footer">
-    <p>جميع الحقوق محفوظة © 2025 | نظام إدارة العملاء والطلبات والصيانة - النسخة المتكاملة</p>
+    <p>جميع الحقوق محفوظة © 2025 | نظام إدارة العملاء والطلبات والصيانة</p>
   </div>
 </div>
 
-<!-- مؤشر التحميل -->
 <div id="loading-overlay" class="loading-overlay" style="display: none;">
   <div class="spinner"></div>
   <p id="loading-message">جاري معالجة طلبك...</p>
 </div>
 
 <script>
-// إعدادات النظام
-let systemSettings = {
-  scriptUrl: 'https://script.google.com/macros/s/AKfycby8gnEzm5R_eLwBfj7B75i2wjjIDJGf-VsbIYAMw13FxN3CEN6nI060Xg_UUEHroVFGOA/exec',
-  sheetId: '1GZ9IoXTSOnEW0LCkT9XApOT62HlSPBdnTaccOM8UnnU'
-};
+// ========== الإعدادات التلقائية ==========
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydFIBpXL6vRfYOt7R5zHfXb-FouKQ_H_ASw_GPf5oCFZW-e-cCtcOoDPfoVFFWz8Y/exec';
+const GOOGLE_SHEET_ID = '1GZ9IoXTSOnEW0LCkT9XApOT62HlSPBdnTaccOM8UnnU';
 
-// بيانات التطبيق (التخزين المؤقت)
+// ========== البيانات ==========
 let customers = [];
 let orders = [];
 let maintenance = [];
 
-// عناصر DOM
-const customerAlert = document.getElementById('customer-alert');
-const orderAlert = document.getElementById('order-alert');
-const maintenanceAlert = document.getElementById('maintenance-alert');
-const settingsAlert = document.getElementById('settings-alert');
-const searchInput = document.getElementById('search-input');
-const customersContainer = document.getElementById('customers-container');
-const maintenanceContainer = document.getElementById('maintenance-container');
-const ordersContainer = document.getElementById('orders-container');
-const orderCustomerSelect = document.getElementById('order-customer');
-const maintenanceCustomerSelect = document.getElementById('maintenance-customer');
-const noCustomers = document.getElementById('no-customers');
-const noMaintenance = document.getElementById('no-maintenance');
-const noOrders = document.getElementById('no-orders');
-const loadingOverlay = document.getElementById('loading-overlay');
-const loadingMessage = document.getElementById('loading-message');
-const connectionStatus = document.getElementById('connection-status');
-const systemStats = document.getElementById('system-stats');
-const toggleSettingsBtn = document.getElementById('toggle-settings');
-const settingsContent = document.getElementById('settings-content');
-const clearDataBtn = document.getElementById('clear-data-btn');
-
-// عناصر الإحصائيات
-const totalCustomersEl = document.getElementById('total-customers');
-const totalOrdersEl = document.getElementById('total-orders');
-const totalMaintenanceEl = document.getElementById('total-maintenance');
-const pendingMaintenanceEl = document.getElementById('pending-maintenance');
-
-// تهيئة التطبيق
+// ========== عند تحميل الصفحة ==========
 document.addEventListener('DOMContentLoaded', function() {
-  // تعيين تاريخ اليوم كتاريخ افتراضي
+  // تعيين تاريخ اليوم
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('customer-reg-date').value = today;
   document.getElementById('order-date').value = today;
   document.getElementById('maintenance-date').value = today;
   
-  // تحميل إعدادات النظام
-  loadSystemSettings();
-  
-  // تهيئة نظام التبويبات
+  // تهيئة التبويبات
   initTabs();
   
   // إضافة مستمع للبحث
-  searchInput.addEventListener('input', updateView);
+  document.getElementById('search-input').addEventListener('input', updateView);
   
-  // إعدادات التبديل
-  toggleSettingsBtn.addEventListener('click', function() {
-    settingsContent.classList.toggle('show');
-    this.innerHTML = settingsContent.classList.contains('show') ? 
-      '<i class="fas fa-sliders-h"></i> إخفاء الإعدادات' : 
-      '<i class="fas fa-sliders-h"></i> إظهار/إخفاء الإعدادات';
-  });
-  
-  // عرض زر حذف البيانات إذا كان هناك بيانات محلية
-  checkLocalData();
-  
-  // محاولة تحميل البيانات إذا كان هناك رابط سكريبت محفوظ
-  if (systemSettings.scriptUrl) {
-    showLoading('جاري الاتصال بالخادم...');
-    setTimeout(() => {
-      loadAllData();
-    }, 500);
-  } else {
-    showAlert(customerAlert, 'يرجى إعداد رابط تطبيق Google Apps Script أولاً', 'info');
-  }
+  // تحميل البيانات تلقائياً
+  setTimeout(() => {
+    loadAllData();
+  }, 500);
 });
 
-// تحميل إعدادات النظام
-function loadSystemSettings() {
-  document.getElementById('script-url').value = systemSettings.scriptUrl;
-  document.getElementById('google-sheet-id').value = systemSettings.sheetId;
+// ========== تهيئة التبويبات ==========
+function initTabs() {
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
   
-  // عرض حالة الإعدادات
-  if (systemSettings.scriptUrl) {
-    connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم حفظ الإعدادات</span>';
-  }
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      if (tabId === 'view-tab') updateView();
+    });
+  });
 }
 
-// حفظ إعدادات النظام
-function saveSystemSettings() {
-  const scriptUrl = document.getElementById('script-url').value.trim();
-  const sheetId = document.getElementById('google-sheet-id').value.trim();
-  
-  if (!scriptUrl) {
-    showAlert(settingsAlert, 'يرجى إدخال رابط تطبيق Google Apps Script', 'error');
-    return;
-  }
-  
-  systemSettings.scriptUrl = scriptUrl;
-  systemSettings.sheetId = sheetId;
-  
-  localStorage.setItem('systemSettings', JSON.stringify(systemSettings));
-  
-  showAlert(settingsAlert, 'تم حفظ إعدادات النظام بنجاح!', 'success');
-  connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم حفظ الإعدادات</span>';
-  
-  // اختبار الاتصال تلقائياً
-  setTimeout(() => {
-    testConnection();
-  }, 1000);
-}
-
-// اختبار الاتصال بالخادم
-async function testConnection() {
-  if (!systemSettings.scriptUrl) {
-    showAlert(settingsAlert, 'يرجى إدخال رابط تطبيق Google Apps Script أولاً', 'error');
-    return;
-  }
-  
-  showLoading('جاري اختبار الاتصال بالخادم...');
-  
-  try {
-    const response = await callGoogleScript('getStats');
-    
-    if (response.success) {
-      hideLoading();
-      connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> الاتصال ناجح - الخادم يعمل</span>';
-      showAlert(settingsAlert, 'تم الاتصال بالخادم بنجاح!', 'success');
-      
-      // تحديث إحصائيات النظام
-      updateSystemStats(response.data);
-      
-    } else {
-      hideLoading();
-      connectionStatus.innerHTML = '<span style="color: #F44336;"><i class="fas fa-times-circle"></i> فشل الاتصال بالخادم</span>';
-      showAlert(settingsAlert, 'فشل الاتصال بالخادم: ' + (response.error || 'خطأ غير معروف'), 'error');
-    }
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Connection test failed:', error);
-    connectionStatus.innerHTML = '<span style="color: #F44336;"><i class="fas fa-times-circle"></i> فشل الاتصال: ' + error.message + '</span>';
-    showAlert(settingsAlert, 'فشل الاتصال: ' + error.message, 'error');
-  }
-}
-
-// إعداد الجدول تلقائياً
-async function setupGoogleSheet() {
-  if (!systemSettings.sheetId) {
-    showAlert(settingsAlert, 'يرجى إدخال رابط جوجل شيت أولاً', 'error');
-    return;
-  }
-  
-  showLoading('جاري إعداد الجدول تلقائياً...');
-  
-  try {
-    // إنشاء الأوراق من خلال إضافة بيانات تجريبية
-    const testCustomer = {
-      action: 'addCustomer',
-      name: 'عميل تجريبي',
-      phone: '0512345678',
-      email: 'test@example.com',
-      type: 'عادي'
-    };
-    
-    const response = await callGoogleScript('addCustomer', testCustomer);
-    
-    if (response.success) {
-      hideLoading();
-      showAlert(settingsAlert, 'تم إعداد الجدول بنجاح! تم إنشاء الأوراق المطلوبة.', 'success');
-      connectionStatus.innerHTML = '<span style="color: #4CAF50;"><i class="fas fa-check-circle"></i> تم إعداد الجدول بنجاح</span>';
-      
-      // تحميل البيانات بعد الإعداد
-      setTimeout(() => {
-        loadAllData();
-      }, 1500);
-    }
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Setup failed:', error);
-    showAlert(settingsAlert, 'فشل إعداد الجدول: ' + error.message, 'error');
-  }
-}
-
-// تحديث إحصائيات النظام
-function updateSystemStats(stats) {
-  const statsText = `
-    العملاء: ${stats.totalCustomers || 0}<br>
-    الطلبات: ${stats.totalOrders || 0}<br>
-    الصيانة: ${stats.totalMaintenance || 0}<br>
-    الصيانة المعلقة: ${stats.pendingMaintenance || 0}
-  `;
-  
-  systemStats.innerHTML = statsText;
-}
-
-// استدعاء Google Apps Script
+// ========== استدعاء Google Script ==========
 async function callGoogleScript(action, params = {}) {
-  if (!systemSettings.scriptUrl) {
-    throw new Error('لم يتم تحديد رابط تطبيق Google Apps Script');
-  }
-  
-  // بناء URL مع المعاملات
-  let url = systemSettings.scriptUrl;
+  let url = GOOGLE_SCRIPT_URL;
   const allParams = { action, ...params };
   const queryString = Object.keys(allParams)
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(allParams[key])}`)
     .join('&');
-  
   url += (url.includes('?') ? '&' : '?') + queryString;
   
   const response = await fetch(url);
-  
-  if (!response.ok) {
-    throw new Error(`فشل الطلب: ${response.status} ${response.statusText}`);
-  }
-  
-  const data = await response.json();
-  return data;
+  if (!response.ok) throw new Error(`فشل الطلب: ${response.status}`);
+  return await response.json();
 }
 
-// تحميل جميع البيانات
+// ========== تحميل جميع البيانات ==========
 async function loadAllData() {
-  if (!systemSettings.scriptUrl) {
-    showAlert(settingsAlert, 'يرجى إعداد رابط تطبيق Google Apps Script أولاً', 'error');
-    return;
-  }
-  
-  showLoading('جاري تحميل البيانات من الخادم...');
-  
+  showLoading('جاري تحميل البيانات...');
   try {
     // تحميل العملاء
     const customersResponse = await callGoogleScript('getCustomers');
     if (customersResponse.success) {
       customers = customersResponse.data || [];
-      localStorage.setItem('customers_backup', JSON.stringify(customers));
+      updateCustomersSelect();
     }
     
     // تحميل الطلبات
     const ordersResponse = await callGoogleScript('getOrders');
-    if (ordersResponse.success) {
-      orders = ordersResponse.data || [];
-      localStorage.setItem('orders_backup', JSON.stringify(orders));
-    }
+    if (ordersResponse.success) orders = ordersResponse.data || [];
     
     // تحميل الصيانة
     const maintenanceResponse = await callGoogleScript('getMaintenance');
-    if (maintenanceResponse.success) {
-      maintenance = maintenanceResponse.data || [];
-      localStorage.setItem('maintenance_backup', JSON.stringify(maintenance));
-    }
-    
-    // تحميل الإحصائيات
-    const statsResponse = await callGoogleScript('getStats');
-    if (statsResponse.success) {
-      updateSystemStats(statsResponse.data);
-    }
+    if (maintenanceResponse.success) maintenance = maintenanceResponse.data || [];
     
     hideLoading();
-    showAlert(settingsAlert, 'تم تحميل البيانات بنجاح من الخادم!', 'success');
-    
-    // تحديث عرض البيانات
     updateView();
-    
-    // تحديث قوائم اختيار العملاء
-    loadCustomersToSelect();
-    
-    // التحقق من البيانات المحلية
-    checkLocalData();
+    showAlert('customer-alert', 'تم تحميل البيانات بنجاح', 'success');
     
   } catch (error) {
     hideLoading();
-    console.error('Error loading data:', error);
-    
-    // محاولة استخدام البيانات المحلية الاحتياطية
-    try {
-      customers = JSON.parse(localStorage.getItem('customers_backup')) || [];
-      orders = JSON.parse(localStorage.getItem('orders_backup')) || [];
-      maintenance = JSON.parse(localStorage.getItem('maintenance_backup')) || [];
-      
-      showAlert(settingsAlert, 'تم تحميل البيانات من النسخ الاحتياطي المحلي', 'warning');
-      updateView();
-      loadCustomersToSelect();
-      
-    } catch (backupError) {
-      showAlert(settingsAlert, 'فشل تحميل البيانات: ' + error.message, 'error');
-    }
+    console.error('❌ خطأ في تحميل البيانات:', error);
+    showAlert('customer-alert', 'فشل تحميل البيانات: ' + error.message, 'error');
   }
 }
 
-// تحميل العملاء في قوائم الاختيار
-function loadCustomersToSelect() {
-  orderCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
-  maintenanceCustomerSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
+// ========== تحديث قوائم اختيار العملاء ==========
+function updateCustomersSelect() {
+  const orderSelect = document.getElementById('order-customer');
+  const maintenanceSelect = document.getElementById('maintenance-customer');
+  if (!orderSelect || !maintenanceSelect) return;
+  
+  orderSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
+  maintenanceSelect.innerHTML = '<option value="">-- اختر العميل --</option>';
   
   customers.forEach(customer => {
     const option1 = document.createElement('option');
     option1.value = customer.ID;
-    option1.textContent = `${customer.الاسم} - ${customer.الهاتف}`;
-    orderCustomerSelect.appendChild(option1);
+    option1.textContent = `${customer.الاسم || ''} - ${customer.الهاتف || ''}`;
+    orderSelect.appendChild(option1);
     
     const option2 = document.createElement('option');
     option2.value = customer.ID;
-    option2.textContent = `${customer.الاسم} - ${customer.الهاتف}`;
-    maintenanceCustomerSelect.appendChild(option2);
+    option2.textContent = `${customer.الاسم || ''} - ${customer.الهاتف || ''}`;
+    maintenanceSelect.appendChild(option2);
   });
 }
 
-// إضافة عميل جديد
+// ========== إضافة عميل جديد ==========
 async function addCustomer() {
   const name = document.getElementById('customer-name').value.trim();
   const phone = document.getElementById('customer-phone').value.trim();
-  const email = document.getElementById('customer-email').value.trim();
-  const address = document.getElementById('customer-address').value.trim();
-  const type = document.getElementById('customer-type').value;
-  const regDate = document.getElementById('customer-reg-date').value;
-  const notes = document.getElementById('customer-notes').value.trim();
-  
-  // التحقق من البيانات المطلوبة
   if (!name || !phone) {
-    showAlert(customerAlert, 'يرجى ملء اسم العميل ورقم الهاتف', 'error');
+    showAlert('customer-alert', 'يرجى ملء اسم العميل ورقم الهاتف', 'error');
     return;
   }
   
-  showLoading('جاري حفظ العميل في الخادم...');
-  
+  showLoading('جاري إضافة العميل...');
   try {
     const params = {
       name,
       phone,
-      email,
-      address,
-      type,
-      regDate,
-      notes
+      email: document.getElementById('customer-email').value.trim(),
+      address: document.getElementById('customer-address').value.trim(),
+      type: document.getElementById('customer-type').value,
+      regDate: document.getElementById('customer-reg-date').value,
+      notes: document.getElementById('customer-notes').value.trim()
     };
     
     const response = await callGoogleScript('addCustomer', params);
-    
     if (response.success) {
-      hideLoading();
-      showAlert(customerAlert, response.message || 'تم إضافة العميل بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
+      showAlert('customer-alert', response.message || 'تم إضافة العميل بنجاح!', 'success');
       await loadAllData();
-      
-      // مسح النموذج
       clearCustomerForm();
-      
     } else {
-      hideLoading();
-      showAlert(customerAlert, 'فشل إضافة العميل: ' + (response.error || 'خطأ غير معروف'), 'error');
+      showAlert('customer-alert', response.error || 'فشل إضافة العميل', 'error');
     }
-    
   } catch (error) {
-    hideLoading();
-    console.error('Error adding customer:', error);
-    showAlert(customerAlert, 'فشل إضافة العميل: ' + error.message, 'error');
+    showAlert('customer-alert', 'فشل إضافة العميل: ' + error.message, 'error');
   }
+  hideLoading();
 }
 
-// إضافة طلب جديد
+// ========== إضافة طلب جديد ==========
 async function addOrder() {
-  const customerId = orderCustomerSelect.value;
-  const date = document.getElementById('order-date').value;
-  const dueDate = document.getElementById('order-due-date').value;
+  const customerId = document.getElementById('order-customer').value;
   const items = document.getElementById('order-items').value.trim();
-  const amount = document.getElementById('order-amount').value;
-  const status = document.getElementById('order-status').value;
-  const priority = document.getElementById('order-priority').value;
-  
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !items) {
-    showAlert(orderAlert, 'يرجى ملء بيانات العميل وتاريخ الطلب والمطلوب من المحل', 'error');
+  if (!customerId || !items) {
+    showAlert('order-alert', 'يرجى اختيار العميل وكتابة المطلوب', 'error');
     return;
   }
   
-  // البحث عن بيانات العميل
   const customer = customers.find(c => c.ID === customerId);
   if (!customer) {
-    showAlert(orderAlert, 'العميل غير موجود', 'error');
+    showAlert('order-alert', 'العميل غير موجود', 'error');
     return;
   }
   
-  showLoading('جاري حفظ الطلب في الخادم...');
-  
+  showLoading('جاري إضافة الطلب...');
   try {
     const params = {
       customerId,
-      customerName: customer.الاسم,
-      customerPhone: customer.الهاتف,
-      date,
-      dueDate,
+      customerName: customer.الاسم || '',
+      customerPhone: customer.الهاتف || '',
+      date: document.getElementById('order-date').value,
+      dueDate: document.getElementById('order-due-date').value,
       items,
-      amount,
-      status,
-      priority
+      amount: document.getElementById('order-amount').value || 0,
+      status: document.getElementById('order-status').value,
+      priority: document.getElementById('order-priority').value
     };
     
     const response = await callGoogleScript('addOrder', params);
-    
     if (response.success) {
-      hideLoading();
-      showAlert(orderAlert, response.message || 'تم إضافة الطلب بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
+      showAlert('order-alert', response.message || 'تم إضافة الطلب بنجاح!', 'success');
       await loadAllData();
-      
-      // مسح النموذج
       clearOrderForm();
-      
     } else {
-      hideLoading();
-      showAlert(orderAlert, 'فشل إضافة الطلب: ' + (response.error || 'خطأ غير معروف'), 'error');
+      showAlert('order-alert', response.error || 'فشل إضافة الطلب', 'error');
     }
-    
   } catch (error) {
-    hideLoading();
-    console.error('Error adding order:', error);
-    showAlert(orderAlert, 'فشل إضافة الطلب: ' + error.message, 'error');
+    showAlert('order-alert', 'فشل إضافة الطلب: ' + error.message, 'error');
   }
+  hideLoading();
 }
 
-// إضافة جهاز للصيانة
+// ========== إضافة صيانة جديدة ==========
 async function addMaintenance() {
-  const customerId = maintenanceCustomerSelect.value;
-  const date = document.getElementById('maintenance-date').value;
-  const expectedDate = document.getElementById('maintenance-expected-date').value;
+  const customerId = document.getElementById('maintenance-customer').value;
   const deviceType = document.getElementById('maintenance-device-type').value;
-  const deviceBrand = document.getElementById('maintenance-device-brand').value.trim();
-  const deviceModel = document.getElementById('maintenance-device-model').value.trim();
   const problem = document.getElementById('maintenance-problem').value.trim();
-  const status = document.getElementById('maintenance-status').value;
-  const cost = document.getElementById('maintenance-cost').value;
-  const priority = document.getElementById('maintenance-priority').value;
-  const notes = document.getElementById('maintenance-notes').value.trim();
-  
-  // التحقق من البيانات المطلوبة
-  if (!customerId || !date || !deviceType || !problem) {
-    showAlert(maintenanceAlert, 'يرجى ملء بيانات العميل وتاريخ الاستلام ونوع الجهاز ووصف المشكلة', 'error');
+  if (!customerId || !deviceType || !problem) {
+    showAlert('maintenance-alert', 'يرجى اختيار العميل ونوع الجهاز وكتابة المشكلة', 'error');
     return;
   }
   
-  // البحث عن بيانات العميل
   const customer = customers.find(c => c.ID === customerId);
   if (!customer) {
-    showAlert(maintenanceAlert, 'العميل غير موجود', 'error');
+    showAlert('maintenance-alert', 'العميل غير موجود', 'error');
     return;
   }
   
-  showLoading('جاري حفظ بيانات الصيانة في الخادم...');
-  
+  showLoading('جاري إضافة الصيانة...');
   try {
     const params = {
       customerId,
-      customerName: customer.الاسم,
-      customerPhone: customer.الهاتف,
-      date,
-      expectedDate,
+      customerName: customer.الاسم || '',
+      customerPhone: customer.الهاتف || '',
+      date: document.getElementById('maintenance-date').value,
+      expectedDate: document.getElementById('maintenance-expected-date').value,
       deviceType,
-      deviceBrand,
-      deviceModel,
+      deviceBrand: document.getElementById('maintenance-device-brand').value.trim(),
+      deviceModel: document.getElementById('maintenance-device-model').value.trim(),
       problem,
-      status,
-      cost,
-      priority,
-      notes
+      status: document.getElementById('maintenance-status').value,
+      cost: document.getElementById('maintenance-cost').value || 0,
+      priority: document.getElementById('maintenance-priority').value,
+      notes: document.getElementById('maintenance-notes').value.trim()
     };
     
     const response = await callGoogleScript('addMaintenance', params);
-    
     if (response.success) {
-      hideLoading();
-      showAlert(maintenanceAlert, response.message || 'تم استلام الجهاز للصيانة بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
+      showAlert('maintenance-alert', response.message || 'تم إضافة الصيانة بنجاح!', 'success');
       await loadAllData();
-      
-      // مسح النموذج
       clearMaintenanceForm();
-      
     } else {
-      hideLoading();
-      showAlert(maintenanceAlert, 'فشل إضافة الصيانة: ' + (response.error || 'خطأ غير معروف'), 'error');
+      showAlert('maintenance-alert', response.error || 'فشل إضافة الصيانة', 'error');
     }
-    
   } catch (error) {
-    hideLoading();
-    console.error('Error adding maintenance:', error);
-    showAlert(maintenanceAlert, 'فشل إضافة الصيانة: ' + error.message, 'error');
+    showAlert('maintenance-alert', 'فشل إضافة الصيانة: ' + error.message, 'error');
   }
+  hideLoading();
 }
 
-// مسح نماذج الإدخال
+// ========== مسح النماذج ==========
 function clearCustomerForm() {
   document.getElementById('customer-name').value = '';
   document.getElementById('customer-phone').value = '';
@@ -1809,7 +554,7 @@ function clearCustomerForm() {
   document.getElementById('customer-type').value = 'عادي';
   document.getElementById('customer-notes').value = '';
   document.getElementById('customer-reg-date').value = new Date().toISOString().split('T')[0];
-  customerAlert.style.display = 'none';
+  document.getElementById('customer-alert').style.display = 'none';
 }
 
 function clearOrderForm() {
@@ -1820,7 +565,7 @@ function clearOrderForm() {
   document.getElementById('order-amount').value = '';
   document.getElementById('order-status').value = 'معلق';
   document.getElementById('order-priority').value = 'عادية';
-  orderAlert.style.display = 'none';
+  document.getElementById('order-alert').style.display = 'none';
 }
 
 function clearMaintenanceForm() {
@@ -1835,44 +580,36 @@ function clearMaintenanceForm() {
   document.getElementById('maintenance-cost').value = '';
   document.getElementById('maintenance-priority').value = 'عادية';
   document.getElementById('maintenance-notes').value = '';
-  maintenanceAlert.style.display = 'none';
+  document.getElementById('maintenance-alert').style.display = 'none';
 }
 
-// تحديث عرض البيانات
+// ========== تحديث العرض ==========
 function updateView() {
-  const searchTerm = searchInput.value.toLowerCase();
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
   
-  // تصفية البيانات بناءً على البحث
-  let filteredCustomers = customers;
-  let filteredOrders = orders;
-  let filteredMaintenance = maintenance;
+  // تصفية البيانات
+  let filteredCustomers = customers.filter(c => 
+    (c.الاسم && c.الاسم.toLowerCase().includes(searchTerm)) || 
+    (c.الهاتف && c.الهاتф.includes(searchTerm))
+  );
   
-  if (searchTerm) {
-    filteredCustomers = customers.filter(c => 
-      (c.الاسم && c.الاسم.toLowerCase().includes(searchTerm)) || 
-      (c.الهاتف && c.الهاتف.includes(searchTerm)) ||
-      (c.البريد && c.البريد.toLowerCase().includes(searchTerm)) ||
-      (c.العنوان && c.العنوان.toLowerCase().includes(searchTerm))
-    );
-    
-    filteredOrders = orders.filter(o => 
-      (o['اسم العميل'] && o['اسم العميل'].toLowerCase().includes(searchTerm)) || 
-      (o.المطلوب && o.المطلوب.toLowerCase().includes(searchTerm)) ||
-      (o.الحالة && o.الحالة.toLowerCase().includes(searchTerm))
-    );
-    
-    filteredMaintenance = maintenance.filter(m => 
-      (m['اسم العميل'] && m['اسم العميل'].toLowerCase().includes(searchTerm)) || 
-      (m['نوع الجهاز'] && m['نوع الجهاز'].toLowerCase().includes(searchTerm)) ||
-      (m.الماركة && m.الماركة.toLowerCase().includes(searchTerm)) ||
-      (m.الموديل && m.الموديل.toLowerCase().includes(searchTerm)) ||
-      (m.المشكلة && m.المشكلة.toLowerCase().includes(searchTerm)) ||
-      (m.الحالة && m.الحالة.toLowerCase().includes(searchTerm))
-    );
-  }
+  let filteredOrders = orders.filter(o => 
+    (o['اسم العميل'] && o['اسم العميل'].toLowerCase().includes(searchTerm)) || 
+    (o.المطلوب && o.المطلوب.toLowerCase().includes(searchTerm))
+  );
+  
+  let filteredMaintenance = maintenance.filter(m => 
+    (m['اسم العميل'] && m['اسم العميل'].toLowerCase().includes(searchTerm)) || 
+    (m['نوع الجهاز'] && m['نوع الجهاز'].toLowerCase().includes(searchTerm))
+  );
   
   // تحديث الإحصائيات
-  updateStats(filteredCustomers, filteredOrders, filteredMaintenance);
+  document.getElementById('total-customers').textContent = filteredCustomers.length;
+  document.getElementById('total-orders').textContent = filteredOrders.length;
+  document.getElementById('total-maintenance').textContent = filteredMaintenance.length;
+  document.getElementById('pending-maintenance').textContent = filteredMaintenance.filter(m => 
+    m.الحالة && m.الحالة !== 'جاهز للتسليم' && m.الحالة !== 'مسلم'
+  ).length;
   
   // تحديث العرض
   updateCustomersDisplay(filteredCustomers);
@@ -1880,507 +617,150 @@ function updateView() {
   updateOrdersDisplay(filteredOrders);
 }
 
-// تحديث الإحصائيات
-function updateStats(filteredCustomers, filteredOrders, filteredMaintenance) {
-  totalCustomersEl.textContent = filteredCustomers.length;
-  totalOrdersEl.textContent = filteredOrders.length;
-  totalMaintenanceEl.textContent = filteredMaintenance.length;
-  
-  const pendingMaintenance = filteredMaintenance.filter(m => 
-    m.الحالة && m.الحالة !== 'جاهز للتسليم' && m.الحالة !== 'مسلم'
-  ).length;
-  
-  pendingMaintenanceEl.textContent = pendingMaintenance;
-}
-
-// تحديث عرض العملاء
+// ========== تحديث عرض العملاء ==========
 function updateCustomersDisplay(filteredCustomers) {
+  const container = document.getElementById('customers-container');
+  const noData = document.getElementById('no-customers');
+  
   if (filteredCustomers.length === 0) {
-    customersContainer.innerHTML = '';
-    noCustomers.style.display = 'block';
+    container.innerHTML = '';
+    noData.style.display = 'block';
     return;
   }
   
-  noCustomers.style.display = 'none';
-  
-  let customersHTML = '';
+  noData.style.display = 'none';
+  let html = '';
   
   filteredCustomers.forEach(customer => {
-    const customerOrders = orders.filter(o => o['معرف العميل'] === customer.ID);
-    const customerMaintenance = maintenance.filter(m => m['معرف العميل'] === customer.ID);
     const typeClass = getCustomerTypeClass(customer.النوع);
-    
-    customersHTML += `
+    html += `
       <div class="customer-card">
         <div class="customer-header">
-          <div>
-            <div class="customer-name">${customer.الاسم || 'غير محدد'}</div>
-            <span class="customer-type ${typeClass}">${customer.النوع || 'عادي'}</span>
-          </div>
+          <div class="customer-name">${customer.الاسم || 'غير محدد'}</div>
+          <span class="customer-type ${typeClass}">${customer.النوع || 'عادي'}</span>
         </div>
-        
         <div class="customer-details">
           <p><i class="fas fa-phone"></i> ${customer.الهاتف || 'غير محدد'}</p>
           ${customer.البريد ? `<p><i class="fas fa-envelope"></i> ${customer.البريد}</p>` : ''}
           ${customer.العنوان ? `<p><i class="fas fa-map-marker-alt"></i> ${customer.العنوان}</p>` : ''}
           <p><i class="fas fa-calendar"></i> ${formatDate(customer['تاريخ التسجيل'])}</p>
-          ${customer.الملاحظات ? `<p><i class="fas fa-sticky-note"></i> ${truncateText(customer.الملاحظات, 50)}</p>` : ''}
-        </div>
-        
-        <div class="customer-stats">
-          <div class="customer-stat">${customerOrders.length} طلب</div>
-          <div class="customer-stat">${customerMaintenance.length} صيانة</div>
-        </div>
-        
-        <div class="customer-actions">
-          <button class="action-btn view" onclick="viewCustomerDetails('${customer.ID}')">
-            <i class="fas fa-eye"></i> عرض
-          </button>
-          <button class="action-btn delete" onclick="deleteCustomer('${customer.ID}')">
-            <i class="fas fa-trash"></i> حذف
-          </button>
         </div>
       </div>
     `;
   });
   
-  customersContainer.innerHTML = customersHTML;
-  animateCards('.customer-card');
+  container.innerHTML = html;
 }
 
-// حذف عميل
-async function deleteCustomer(customerId) {
-  if (!confirm('هل أنت متأكد من حذف هذا العميل؟ سيتم حذف جميع طلباته وأجهزة الصيانة المرتبطة به.')) {
-    return;
-  }
-  
-  showLoading('جاري حذف العميل من الخادم...');
-  
-  try {
-    const response = await callGoogleScript('deleteCustomer', { id: customerId });
-    
-    if (response.success) {
-      hideLoading();
-      showAlert(settingsAlert, response.message || 'تم حذف العميل بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
-      await loadAllData();
-      
-    } else {
-      hideLoading();
-      showAlert(settingsAlert, 'فشل حذف العميل: ' + (response.error || 'خطأ غير معروف'), 'error');
-    }
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Error deleting customer:', error);
-    showAlert(settingsAlert, 'فشل حذف العميل: ' + error.message, 'error');
-  }
-}
-
-// عرض تفاصيل العميل
-function viewCustomerDetails(customerId) {
-  const customer = customers.find(c => c.ID === customerId);
-  if (!customer) return;
-  
-  const customerOrders = orders.filter(o => o['معرف العميل'] === customerId);
-  const customerMaintenance = maintenance.filter(m => m['معرف العميل'] === customerId);
-  
-  let ordersList = '';
-  if (customerOrders.length > 0) {
-    ordersList = '<h4 style="margin-top: 20px; color: #764ba2;">طلبات العميل:</h4><ul style="text-align: right; margin-top: 10px;">';
-    customerOrders.forEach(order => {
-      ordersList += `<li style="margin-bottom: 8px;">${formatDate(order.التاريخ)}: ${truncateText(order.المطلوب, 60)} - ${order.الحالة}</li>`;
-    });
-    ordersList += '</ul>';
-  }
-  
-  let maintenanceList = '';
-  if (customerMaintenance.length > 0) {
-    maintenanceList = '<h4 style="margin-top: 20px; color: #FF9800;">أجهزة الصيانة:</h4><ul style="text-align: right; margin-top: 10px;">';
-    customerMaintenance.forEach(item => {
-      maintenanceList += `<li style="margin-bottom: 8px;">${formatDate(item['تاريخ الاستلام'])}: ${item['نوع الجهاز']} - ${item.الحالة}</li>`;
-    });
-    maintenanceList += '</ul>';
-  }
-  
-  let details = `
-    <div style="text-align: right; line-height: 1.8;">
-      <h3 style="color: #764ba2; margin-bottom: 15px;">${customer.الاسم || 'غير محدد'}</h3>
-      <p><strong>رقم الهاتف:</strong> ${customer.الهاتف || 'غير محدد'}</p>
-      ${customer.البريد ? `<p><strong>البريد الإلكتروني:</strong> ${customer.البريد}</p>` : ''}
-      ${customer.العنوان ? `<p><strong>العنوان:</strong> ${customer.العنوان}</p>` : ''}
-      <p><strong>نوع العميل:</strong> ${customer.النوع || 'عادي'}</p>
-      <p><strong>تاريخ التسجيل:</strong> ${formatDate(customer['تاريخ التسجيل'])}</p>
-      ${customer.الملاحظات ? `<p><strong>ملاحظات:</strong> ${customer.الملاحظات}</p>` : ''}
-      <p><strong>عدد الطلبات:</strong> ${customerOrders.length}</p>
-      <p><strong>عدد أجهزة الصيانة:</strong> ${customerMaintenance.length}</p>
-      ${ordersList}
-      ${maintenanceList}
-    </div>
-  `;
-  
-  const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100%';
-  modal.style.height = '100%';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-  modal.style.zIndex = '1000';
-  
-  modal.innerHTML = `
-    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-      ${details}
-      <div style="text-align: center; margin-top: 25px;">
-        <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 25px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 600;">
-          إغلاق
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(modal);
-  
-  modal.addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.remove();
-    }
-  });
-}
-
-// تحديث عرض الصيانة
+// ========== تحديث عرض الصيانة ==========
 function updateMaintenanceDisplay(filteredMaintenance) {
+  const container = document.getElementById('maintenance-container');
+  const noData = document.getElementById('no-maintenance');
+  
   if (filteredMaintenance.length === 0) {
-    maintenanceContainer.innerHTML = '';
-    noMaintenance.style.display = 'block';
+    container.innerHTML = '';
+    noData.style.display = 'block';
     return;
   }
   
-  noMaintenance.style.display = 'none';
-  
-  let maintenanceHTML = '';
+  noData.style.display = 'none';
+  let html = '';
   
   filteredMaintenance.forEach(item => {
     const statusClass = getMaintenanceStatusClass(item.الحالة);
-    const priorityClass = getPriorityClass(item.الأولوية);
-    
-    maintenanceHTML += `
+    html += `
       <div class="maintenance-card">
         <div class="maintenance-header">
           <div class="maintenance-customer">${item['اسم العميل'] || 'غير محدد'}</div>
           <div class="maintenance-date">${formatDate(item['تاريخ الاستلام'])}</div>
         </div>
-        
         <div class="maintenance-details">
           <div class="maintenance-device">
             <i class="fas fa-laptop"></i> ${item['نوع الجهاز'] || 'غير محدد'}
             ${item.الماركة ? ` - ${item.الماركة}` : ''}
             ${item.الموديل ? ` - ${item.الموديل}` : ''}
           </div>
-          
-          <div class="maintenance-problem">
-            ${truncateText(item.المشكلة || '', 100)}
-          </div>
-          
-          ${item['تاريخ التسليم المتوقع'] ? `<p><strong>تاريخ التسليم المتوقع:</strong> ${formatDate(item['تاريخ التسليم المتوقع'])}</p>` : ''}
-          ${item.الملاحظات ? `<p><strong>ملاحظات:</strong> ${truncateText(item.الملاحظات, 50)}</p>` : ''}
-        </div>
-        
-        <div class="maintenance-actions">
-          <div>
-            <span class="maintenance-status ${statusClass}">${item.الحالة || 'مستلم'}</span>
-            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
-              <i class="fas fa-flag"></i> ${item.الأولوية || 'عادية'}
-            </span>
-          </div>
-          <div>
-            ${item.التكلفة > 0 ? `<span class="maintenance-cost">${item.التكلفة} ريال</span>` : ''}
-          </div>
-        </div>
-        
-        <div class="customer-actions" style="margin-top: 15px;">
-          <button class="action-btn delete" onclick="deleteMaintenance('${item.ID}')">
-            <i class="fas fa-trash"></i> حذف
-          </button>
+          <div class="maintenance-problem">${truncateText(item.المشكلة || '', 100)}</div>
+          <p><strong>الحالة:</strong> <span class="maintenance-status ${statusClass}">${item.الحالة || 'مستلم'}</span></p>
+          ${item.التكلفة > 0 ? `<p><strong>التكلفة:</strong> ${item.التكلفة} ريال</p>` : ''}
         </div>
       </div>
     `;
   });
   
-  maintenanceContainer.innerHTML = maintenanceHTML;
-  animateCards('.maintenance-card');
+  container.innerHTML = html;
 }
 
-// حذف صيانة
-async function deleteMaintenance(maintenanceId) {
-  if (!confirm('هل أنت متأكد من حذف بيانات الصيانة هذه؟')) {
-    return;
-  }
-  
-  showLoading('جاري حذف بيانات الصيانة من الخادم...');
-  
-  try {
-    const response = await callGoogleScript('deleteMaintenance', { id: maintenanceId });
-    
-    if (response.success) {
-      hideLoading();
-      showAlert(settingsAlert, response.message || 'تم حذف بيانات الصيانة بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
-      await loadAllData();
-      
-    } else {
-      hideLoading();
-      showAlert(settingsAlert, 'فشل حذف الصيانة: ' + (response.error || 'خطأ غير معروف'), 'error');
-    }
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Error deleting maintenance:', error);
-    showAlert(settingsAlert, 'فشل حذف الصيانة: ' + error.message, 'error');
-  }
-}
-
-// تحديث عرض الطلبات
+// ========== تحديث عرض الطلبات ==========
 function updateOrdersDisplay(filteredOrders) {
+  const container = document.getElementById('orders-container');
+  const noData = document.getElementById('no-orders');
+  
   if (filteredOrders.length === 0) {
-    ordersContainer.innerHTML = '';
-    noOrders.style.display = 'block';
+    container.innerHTML = '';
+    noData.style.display = 'block';
     return;
   }
   
-  noOrders.style.display = 'none';
-  
-  let ordersHTML = '';
+  noData.style.display = 'none';
+  let html = '';
   
   filteredOrders.forEach(order => {
     const statusClass = getStatusClass(order.الحالة);
-    const priorityClass = getPriorityClass(order.الأولوية);
-    
-    ordersHTML += `
+    html += `
       <div class="order-card">
         <div class="order-header">
           <div class="order-customer">${order['اسم العميل'] || 'غير محدد'}</div>
           <div class="order-date">${formatDate(order.التاريخ)}</div>
         </div>
-        
         <div class="order-details">
           <p><strong>المطلوب:</strong> ${truncateText(order.المطلوب || '', 100)}</p>
-          <p><strong>رقم الهاتف:</strong> ${order['هاتف العميل'] || 'غير محدد'}</p>
+          <p><strong>الحالة:</strong> <span class="order-status ${statusClass}">${order.الحالة || 'معلق'}</span></p>
           ${order.المبلغ > 0 ? `<p><strong>المبلغ:</strong> ${order.المبلغ} ريال</p>` : ''}
-          ${order['تاريخ التسليم'] ? `<p><strong>تاريخ التسليم:</strong> ${formatDate(order['تاريخ التسليم'])}</p>` : ''}
-        </div>
-        
-        <div class="order-actions">
-          <div>
-            <span class="order-status ${statusClass}">${order.الحالة || 'معلق'}</span>
-            <span class="order-priority ${priorityClass}" style="margin-right: 10px;">
-              <i class="fas fa-flag"></i> ${order.الأولوية || 'عادية'}
-            </span>
-          </div>
-          <button class="action-btn delete" onclick="deleteOrder('${order.ID}')">
-            <i class="fas fa-trash"></i> حذف
-          </button>
         </div>
       </div>
     `;
   });
   
-  ordersContainer.innerHTML = ordersHTML;
-  animateCards('.order-card');
+  container.innerHTML = html;
 }
 
-// حذف طلب
-async function deleteOrder(orderId) {
-  if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
-    return;
-  }
-  
-  showLoading('جاري حذف الطلب من الخادم...');
-  
-  try {
-    const response = await callGoogleScript('deleteOrder', { id: orderId });
-    
-    if (response.success) {
-      hideLoading();
-      showAlert(settingsAlert, response.message || 'تم حذف الطلب بنجاح!', 'success');
-      
-      // تحديث البيانات المحلية
-      await loadAllData();
-      
-    } else {
-      hideLoading();
-      showAlert(settingsAlert, 'فشل حذف الطلب: ' + (response.error || 'خطأ غير معروف'), 'error');
-    }
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Error deleting order:', error);
-    showAlert(settingsAlert, 'فشل حذف الطلب: ' + error.message, 'error');
-  }
-}
-
-// تصدير البيانات إلى Excel
-function exportToExcel() {
-  showLoading('جاري تحضير البيانات للتصدير...');
-  
-  setTimeout(() => {
-    // إنشاء بيانات CSV
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-    
-    // تصدير العملاء
-    csvContent += "=== العملاء ===\n";
-    csvContent += "ID,الاسم,الهاتف,البريد,العنوان,النوع,تاريخ التسجيل,الملاحظات,تاريخ الإضافة\n";
-    customers.forEach(customer => {
-      csvContent += `"${customer.ID}","${customer.الاسم}","${customer.الهاتف}","${customer.البريد}","${customer.العنوان}","${customer.النوع}","${customer['تاريخ التسجيل']}","${customer.الملاحظات}","${customer['تاريخ الإضافة']}"\n`;
-    });
-    
-    csvContent += "\n=== الطلبات ===\n";
-    csvContent += "ID,معرف العميل,اسم العميل,هاتف العميل,التاريخ,تاريخ التسليم,المطلوب,المبلغ,الحالة,الأولوية,تاريخ الإضافة\n";
-    orders.forEach(order => {
-      csvContent += `"${order.ID}","${order['معرف العميل']}","${order['اسم العميل']}","${order['هاتف العميل']}","${order.التاريخ}","${order['تاريخ التسليم']}","${order.المطلوب}","${order.المبلغ}","${order.الحالة}","${order.الأولوية}","${order['تاريخ الإضافة']}"\n`;
-    });
-    
-    csvContent += "\n=== الصيانة ===\n";
-    csvContent += "ID,معرف العميل,اسم العميل,هاتف العميل,تاريخ الاستلام,تاريخ التسليم المتوقع,نوع الجهاز,الماركة,الموديل,المشكلة,الحالة,التكلفة,الأولوية,الملاحظات,تاريخ الإضافة\n";
-    maintenance.forEach(item => {
-      csvContent += `"${item.ID}","${item['معرف العميل']}","${item['اسم العميل']}","${item['هاتف العميل']}","${item['تاريخ الاستلام']}","${item['تاريخ التسليم المتوقع']}","${item['نوع الجهاز']}","${item.الماركة}","${item.الموديل}","${item.المشكلة}","${item.الحالة}","${item.التكلفة}","${item.الأولوية}","${item.الملاحظات}","${item['تاريخ الإضافة']}"\n`;
-    });
-    
-    // إنشاء رابط التحميل
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `بيانات_النظام_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    
-    hideLoading();
-    link.click();
-    document.body.removeChild(link);
-    
-    showAlert(settingsAlert, 'تم تصدير البيانات بنجاح!', 'success');
-  }, 1000);
-}
-
-// حذف جميع البيانات المحلية
-function clearAllData() {
-  if (!confirm('هل أنت متأكد من حذف جميع البيانات المحلية؟ هذا لا يؤثر على البيانات في جوجل شيت.')) {
-    return;
-  }
-  
-  localStorage.removeItem('customers_backup');
-  localStorage.removeItem('orders_backup');
-  localStorage.removeItem('maintenance_backup');
-  
-  customers = [];
-  orders = [];
-  maintenance = [];
-  
-  updateView();
-  showAlert(settingsAlert, 'تم حذف جميع البيانات المحلية بنجاح', 'success');
-  clearDataBtn.style.display = 'none';
-}
-
-// التحقق من وجود بيانات محلية
-function checkLocalData() {
-  const hasLocalData = 
-    localStorage.getItem('customers_backup') || 
-    localStorage.getItem('orders_backup') || 
-    localStorage.getItem('maintenance_backup');
-  
-  if (hasLocalData) {
-    clearDataBtn.style.display = 'inline-block';
-  } else {
-    clearDataBtn.style.display = 'none';
-  }
-}
-
-// تهيئة نظام التبويبات
-function initTabs() {
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-  
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const tabId = this.getAttribute('data-tab');
-      
-      // إزالة النشاط من جميع الأزرار والمحتويات
-      tabBtns.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-      
-      // إضافة النشاط للعناصر المحددة
-      this.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-      
-      // إذا كان التبويب هو عرض البيانات، قم بتحديث العرض
-      if (tabId === 'view-tab') {
-        updateView();
-      }
-    });
-  });
-}
-
-// وظائف مساعدة
+// ========== دوال مساعدة ==========
 function showLoading(message) {
-  loadingMessage.textContent = message;
-  loadingOverlay.style.display = 'flex';
+  document.getElementById('loading-message').textContent = message;
+  document.getElementById('loading-overlay').style.display = 'flex';
 }
 
 function hideLoading() {
-  loadingOverlay.style.display = 'none';
+  document.getElementById('loading-overlay').style.display = 'none';
 }
 
-function showAlert(alertElement, message, type) {
-  alertElement.innerHTML = `
-    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-    ${message}
-  `;
+function showAlert(elementId, message, type) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
   
-  alertElement.className = `alert alert-${type}`;
-  alertElement.style.display = 'flex';
+  element.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+  element.className = `alert alert-${type}`;
+  element.style.display = 'flex';
   
   setTimeout(() => {
-    alertElement.style.display = 'none';
+    element.style.display = 'none';
   }, 5000);
 }
 
 function formatDate(dateString) {
   if (!dateString) return 'غير محدد';
-  
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ar-EG', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  } catch (error) {
+    return date.toLocaleDateString('ar-EG');
+  } catch {
     return dateString;
   }
 }
 
 function truncateText(text, maxLength) {
   if (!text) return '';
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
-}
-
-function animateCards(selector) {
-  const cards = document.querySelectorAll(selector);
-  cards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, index * 100);
-  });
+  return text.length <= maxLength ? text : text.substring(0, maxLength) + '...';
 }
 
 function getStatusClass(status) {
@@ -2413,16 +793,6 @@ function getCustomerTypeClass(type) {
     default: return 'type-normal';
   }
 }
-
-function getPriorityClass(priority) {
-  switch(priority) {
-    case 'عادية': return 'priority-normal';
-    case 'متوسطة': return 'priority-medium';
-    case 'عاجلة': return 'priority-high';
-    default: return 'priority-normal';
-  }
-}
 </script>
-
 </body>
 </html>
